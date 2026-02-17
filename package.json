@@ -1,0 +1,14 @@
+{
+  "name": "nexawear-shop",
+  "version": "1.0.0",
+  "description": "Sklep NEXAWEAR",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "stripe": "^20.3.1",
+    "cors": "^2.8.5"
+  }
+}
