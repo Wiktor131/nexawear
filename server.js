@@ -1,15 +1,16 @@
 const stripe = require('stripe')('sk_test_51RVccZQjNQmqXkk9WT6SYewjwEXkkSwak6MVBm1vtRxVjWHWM5kKjwQTebfsPRbLJojXLnvoLAs5mfZGTiI79mVW007Whr1zWL');
 const express = require('express');
-const cors = require('cors'); // Obsługa błędów połączenia
+const cors = require('cors');
 const app = express();
 
-app.use(cors()); // Zezwól przeglądarce na kontakt z serwerem
+app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); 
 
 app.post('/create-checkout-session', async (req, res) => {
   try {
-    const { items, discountActive } = req.body;
+    // Pobieramy produkty oraz dodatkowe dane wysyłkowe wysłane z index.html
+    const { items, shipping, discountActive } = req.body;
 
     const lineItems = items.map(item => ({
       price_data: {
@@ -18,7 +19,7 @@ app.post('/create-checkout-session', async (req, res) => {
           name: item.name, 
           images: [item.img] 
         },
-        unit_amount: Math.round(item.price * 100), // Stripe wymaga groszy
+        unit_amount: Math.round(item.price * 100), 
       },
       quantity: 1,
     }));
@@ -27,10 +28,21 @@ app.post('/create-checkout-session', async (req, res) => {
       payment_method_types: ['card', 'blik', 'p24'],
       line_items: lineItems,
       mode: 'payment',
-      // Pamiętaj: PROMO_ID musi istnieć w panelu Stripe, jeśli chcesz używać kuponów
-      // discounts: discountActive ? [{ coupon: 'TWOJ_KOD_ID' }] : [], 
-      success_url: 'http://localhost:4242', // Adres po udanej płatności
-      cancel_url: 'http://localhost:4242',  // Adres po rezygnacji
+      
+      // 1. WYMUSZENIE ZEBRANIA ADRESU W STRIPE
+      shipping_address_collection: {
+        allowed_countries: ['PL'], // Ograniczamy do Polski
+      },
+
+      // 2. PRZEKAZANIE DODATKOWYCH DANYCH (np. kodu paczkomatu)
+      // Te dane zobaczysz w panelu Stripe w sekcji "Metadane"
+      metadata: {
+        paczkomat: shipping ? shipping.inpost : 'Nie podano',
+        klient_imie: shipping ? shipping.name : 'Brak danych'
+      },
+
+      success_url: 'http://localhost:4242', 
+      cancel_url: 'http://localhost:4242',  
     });
 
     res.json({ id: session.id });
