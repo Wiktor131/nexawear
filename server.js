@@ -7,6 +7,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); 
 
+app.use((req, res, next) => {
+    // Rejestrujemy tylko wejścia na stronę główną (GET /)
+    if (req.path === '/' && req.method === 'GET') {
+        const date = new Date().toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' });
+        console.log(`[WIZYTA] ${date} - Ktoś wszedł na stronę NEXA`);
+    }
+    next();
+});
+
 app.post('/create-checkout-session', async (req, res) => {
   try {
     // Pobieramy produkty oraz dodatkowe dane wysyłkowe wysłane z index.html
