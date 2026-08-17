@@ -1,2191 +1,1592 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0a0a0a">
-
-  <title>NEXAWEAR — Streetwear Without Noise</title>
-
-  <meta
-    name="description"
-    content="NEXAWEAR — niezależna marka streetwear. Limitowane kolekcje, ciężkie kroje i grafiki inspirowane mroczną estetyką."
-  >
-
-  <style>
-    /* =========================================================
-       NEXAWEAR
-       Jednoplikowa wersja strony.
-       Zdjęcia możesz później podmienić w obiekcie PRODUCTS w JS.
-       ========================================================= */
-
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-    :root {
-      --bg: #080808;
-      --bg-2: #0d0d0d;
-      --surface: #111111;
-      --surface-2: #161616;
-      --border: rgba(255,255,255,.09);
-      --border-light: rgba(255,255,255,.16);
-      --text: #f4f4f1;
-      --muted: #898989;
-      --muted-2: #5f5f5f;
-      --white: #fff;
-      --danger: #ff4747;
-      --radius: 2px;
-      --transition: .35s cubic-bezier(.2,.8,.2,1);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      background: var(--bg);
-    }
-
-    body {
-      background:
-        radial-gradient(circle at 50% -10%, rgba(255,255,255,.055), transparent 30%),
-        var(--bg);
-      color: var(--text);
-      font-family: Inter, Arial, sans-serif;
-      overflow-x: hidden;
-      line-height: 1.5;
-    }
-
-    body.no-scroll {
-      overflow: hidden;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img {
-      display: block;
-      width: 100%;
-    }
-
-    ::selection {
-      background: #fff;
-      color: #000;
-    }
-
-    /* =========================================================
-       LOADER
-       ========================================================= */
-
-    .loader {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #080808;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .6s ease, visibility .6s ease;
-    }
-
-    .loader.hide {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .loader-inner {
-      width: 180px;
-      text-align: center;
-    }
-
-    .loader-logo {
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: .22em;
-      margin-left: .22em;
-    }
-
-    .loader-line {
-      height: 1px;
-      background: #222;
-      margin-top: 24px;
-      overflow: hidden;
-    }
-
-    .loader-line span {
-      display: block;
-      width: 45%;
-      height: 100%;
-      background: #fff;
-      animation: loader 1.1s infinite ease-in-out;
-    }
-
-    @keyframes loader {
-      0% { transform: translateX(-120%); }
-      100% { transform: translateX(340%); }
-    }
-
-    /* =========================================================
-       ANNOUNCEMENT
-       ========================================================= */
-
-    .announcement {
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 1px solid var(--border);
-      background: #050505;
-      color: #aaa;
-      font-size: 9px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .announcement span {
-      display: inline-block;
-      animation: announcement 20s linear infinite;
-    }
-
-    @keyframes announcement {
-      from { transform: translateX(100%); }
-      to { transform: translateX(-100%); }
-    }
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-
-    header {
-      position: fixed;
-      top: 30px;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      height: 76px;
-      display: flex;
-      align-items: center;
-      padding: 0 4vw;
-      border-bottom: 1px solid transparent;
-      transition: .35s ease;
-    }
-
-    header.scrolled {
-      top: 0;
-      background: rgba(8,8,8,.88);
-      backdrop-filter: blur(18px);
-      border-color: var(--border);
-    }
-
-    .nav {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-    }
-
-    .nav-left,
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-right {
-      justify-content: flex-end;
-    }
-
-    .nav-link {
-      position: relative;
-      color: #aaa;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      transition: color .25s ease;
-    }
-
-    .nav-link:hover {
-      color: #fff;
-    }
-
-    .nav-link::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -7px;
-      width: 0;
-      height: 1px;
-      background: #fff;
-      transition: width .3s ease;
-    }
-
-    .nav-link:hover::after {
-      width: 100%;
-    }
-
-    .logo {
-      font-size: 21px;
-      line-height: 1;
-      font-weight: 900;
-      letter-spacing: .22em;
-      margin-left: .22em;
-      white-space: nowrap;
-    }
-
-    .nav-icon {
-      position: relative;
-      width: 22px;
-      height: 22px;
-      display: grid;
-      place-items: center;
-      border: 0;
-      background: none;
-      color: #fff;
-    }
-
-    .nav-icon svg {
-      width: 18px;
-      height: 18px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.5;
-    }
-
-    .cart-count {
-      position: absolute;
-      top: -7px;
-      right: -8px;
-      min-width: 15px;
-      height: 15px;
-      padding: 0 4px;
-      border-radius: 20px;
-      display: grid;
-      place-items: center;
-      background: #fff;
-      color: #000;
-      font-size: 8px;
-      font-weight: 800;
-    }
-
-    .mobile-menu-btn {
-      display: none;
-      border: 0;
-      background: none;
-      color: #fff;
-    }
-
-    /* =========================================================
-       HERO
-       ========================================================= */
-
-    .hero {
-      min-height: 100svh;
-      position: relative;
-      display: flex;
-      align-items: flex-end;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.75)),
-        radial-gradient(circle at 50% 35%, #242424 0%, #101010 35%, #070707 75%);
-    }
-
-    .hero::before {
-      content: "NEXA";
-      position: absolute;
-      left: 50%;
-      top: 48%;
-      transform: translate(-50%, -50%);
-      color: rgba(255,255,255,.025);
-      font-size: clamp(130px, 28vw, 480px);
-      line-height: .8;
-      font-weight: 900;
-      letter-spacing: -.09em;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .hero-noise {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: .13;
-      background-image:
-        repeating-linear-gradient(
-          0deg,
-          transparent 0,
-          transparent 2px,
-          rgba(255,255,255,.025) 3px
-        );
-      mix-blend-mode: screen;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      padding: 0 5vw 58px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 40px;
-    }
-
-    .hero-copy {
-      max-width: 690px;
-    }
-
-    .eyebrow {
-      margin-bottom: 20px;
-      color: #aaa;
-      font-size: 9px;
-      letter-spacing: .25em;
-      text-transform: uppercase;
-    }
-
-    .hero h1 {
-      max-width: 800px;
-      font-size: clamp(52px, 9vw, 135px);
-      line-height: .84;
-      font-weight: 900;
-      letter-spacing: -.07em;
-      text-transform: uppercase;
-    }
-
-    .hero h1 span {
-      display: block;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(255,255,255,.65);
-    }
-
-    .hero-description {
-      max-width: 390px;
-      margin-top: 27px;
-      color: #9a9a9a;
-      font-size: 11px;
-      line-height: 1.8;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 28px;
-    }
-
-    .btn {
-      min-height: 45px;
-      padding: 0 24px;
-      border: 1px solid #333;
-      background: #111;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      transition: var(--transition);
-    }
-
-    .btn:hover {
-      background: #fff;
-      border-color: #fff;
-      color: #000;
-      transform: translateY(-2px);
-    }
-
-    .btn.white {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
-    .btn.white:hover {
-      background: transparent;
-      color: #fff;
-    }
-
-    .hero-meta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 9px;
-      color: #666;
-      font-size: 8px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    .hero-meta strong {
-      color: #aaa;
-      font-weight: 500;
-    }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 22px;
-      left: 50%;
-      z-index: 3;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: #555;
-      font-size: 7px;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-
-    .scroll-line {
-      width: 1px;
-      height: 35px;
-      background: linear-gradient(#777, transparent);
-    }
-
-    /* =========================================================
-       MARQUEE
-       ========================================================= */
-
-    .marquee {
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-      border-top: 1px solid var(--border);
-      background: #0b0b0b;
-      padding: 17px 0;
-    }
-
-    .marquee-track {
-      display: flex;
-      width: max-content;
-      animation: marquee 30s linear infinite;
-    }
-
-    .marquee-item {
-      padding: 0 35px;
-      color: #777;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .25em;
-      text-transform: uppercase;
-    }
-
-    .marquee-item b {
-      color: #fff;
-      margin-right: 35px;
-    }
-
-    @keyframes marquee {
-      to { transform: translateX(-50%); }
-    }
-
-    /* =========================================================
-       SECTIONS
-       ========================================================= */
-
-    .section {
-      padding: 110px 5vw;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 30px;
-      margin-bottom: 48px;
-    }
-
-    .section-number {
-      color: #555;
-      font-size: 9px;
-      letter-spacing: .15em;
-      margin-bottom: 10px;
-    }
-
-    .section-title {
-      font-size: clamp(30px, 5vw, 65px);
-      line-height: .95;
-      font-weight: 800;
-      letter-spacing: -.05em;
-      text-transform: uppercase;
-    }
-
-    .section-description {
-      max-width: 300px;
-      color: #777;
-      font-size: 10px;
-      line-height: 1.8;
-    }
-
-    /* =========================================================
-       PRODUCTS
-       ========================================================= */
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .product {
-      position: relative;
-      min-width: 0;
-      cursor: pointer;
-    }
-
-    .product-image {
-      position: relative;
-      aspect-ratio: 3 / 4;
-      overflow: hidden;
-      background: #151515;
-    }
-
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .7s ease;
-    }
-
-    .product:hover .product-image img {
-      transform: scale(1.035);
-      filter: brightness(1.07);
-    }
-
-    .product-image::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(
-        180deg,
-        rgba(0,0,0,.04),
-        transparent 65%,
-        rgba(0,0,0,.2)
-      );
-    }
-
-    .product-badge {
-      position: absolute;
-      top: 13px;
-      left: 13px;
-      z-index: 2;
-      padding: 6px 9px;
-      background: rgba(0,0,0,.8);
-      color: #fff;
-      font-size: 7px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      backdrop-filter: blur(5px);
-    }
-
-    .product-wishlist {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 3;
-      width: 32px;
-      height: 32px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: rgba(0,0,0,.35);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      opacity: 0;
-      transform: translateY(-5px);
-      transition: .3s ease;
-      backdrop-filter: blur(6px);
-    }
-
-    .product:hover .product-wishlist {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .product-wishlist.active {
-      opacity: 1;
-      transform: translateY(0);
-      color: #fff;
-    }
-
-    .product-wishlist svg {
-      width: 14px;
-      height: 14px;
-      fill: none;
-      stroke: currentColor;
-    }
-
-    .product-info {
-      padding: 17px 3px 0;
-    }
-
-    .product-name {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    .product-sub {
-      margin-top: 5px;
-      color: #666;
-      font-size: 8px;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-
-    .product-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
-    }
-
-    .price {
-      font-size: 10px;
-      font-weight: 600;
-    }
-
-    .quick-add {
-      padding: 0;
-      border: 0;
-      background: none;
-      color: #777;
-      font-size: 8px;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-      transition: color .25s;
-    }
-
-    .quick-add:hover {
-      color: #fff;
-    }
-
-    /* =========================================================
-       PRODUCT STORY
-       ========================================================= */
-
-    .story {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      min-height: 620px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .story-visual {
-      position: relative;
-      overflow: hidden;
-      min-height: 620px;
-      background:
-        radial-gradient(circle at 50% 45%, #353535, #111 45%, #080808 80%);
-    }
-
-    .story-visual::before {
-      content: "N";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 570px;
-      font-weight: 900;
-      line-height: 1;
-      color: rgba(255,255,255,.025);
-    }
-
-    .story-grid {
-      position: absolute;
-      inset: 0;
-      opacity: .25;
-      background-image:
-        linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
-      background-size: 70px 70px;
-    }
-
-    .story-label {
-      position: absolute;
-      left: 35px;
-      bottom: 35px;
-      font-size: 8px;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: #777;
-    }
-
-    .story-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 70px;
-      background: #0c0c0c;
-      border-left: 1px solid var(--border);
-    }
-
-    .story-content .eyebrow {
-      color: #666;
-    }
-
-    .story-content h2 {
-      max-width: 500px;
-      font-size: clamp(35px, 4vw, 60px);
-      line-height: .95;
-      letter-spacing: -.055em;
-      text-transform: uppercase;
-    }
-
-    .story-content p {
-      max-width: 410px;
-      margin-top: 30px;
-      color: #777;
-      font-size: 11px;
-      line-height: 2;
-    }
-
-    .story-points {
-      margin-top: 35px;
-      border-top: 1px solid var(--border);
-    }
-
-    .story-point {
-      display: flex;
-      gap: 20px;
-      padding: 15px 0;
-      border-bottom: 1px solid var(--border);
-      color: #aaa;
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-
-    .story-point span {
-      color: #555;
-      min-width: 25px;
-    }
-
-    /* =========================================================
-       NEWSLETTER
-       ========================================================= */
-
-    .newsletter {
-      padding: 120px 5vw;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      background:
-        radial-gradient(circle at center, rgba(255,255,255,.045), transparent 40%),
-        #0a0a0a;
-    }
-
-    .newsletter h2 {
-      font-size: clamp(35px, 6vw, 80px);
-      line-height: .9;
-      letter-spacing: -.06em;
-      text-transform: uppercase;
-    }
-
-    .newsletter p {
-      max-width: 430px;
-      margin: 25px auto 30px;
-      color: #777;
-      font-size: 10px;
-      line-height: 1.8;
-    }
-
-    .newsletter-form {
-      display: flex;
-      max-width: 430px;
-      margin: auto;
-      border-bottom: 1px solid #555;
-    }
-
-    .newsletter-form input {
-      flex: 1;
-      min-width: 0;
-      height: 48px;
-      border: 0;
-      outline: none;
-      background: transparent;
-      color: #fff;
-      font-size: 10px;
-    }
-
-    .newsletter-form input::placeholder {
-      color: #555;
-    }
-
-    .newsletter-form button {
-      border: 0;
-      background: transparent;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    /* =========================================================
-       INSTAGRAM
-       ========================================================= */
-
-    .instagram {
-      padding: 100px 5vw;
-    }
-
-    .instagram-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 5px;
-      margin-top: 45px;
-    }
-
-    .ig-tile {
-      position: relative;
-      aspect-ratio: 1;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 40% 40%, #292929, #111 60%, #090909);
-    }
-
-    .ig-tile:nth-child(2) {
-      background:
-        radial-gradient(circle at 60% 30%, #444, #151515 50%, #090909);
-    }
-
-    .ig-tile:nth-child(3) {
-      background:
-        linear-gradient(135deg, #1b1b1b, #353535, #0b0b0b);
-    }
-
-    .ig-tile:nth-child(4) {
-      background:
-        radial-gradient(circle at 35% 65%, #414141, #141414 55%, #080808);
-    }
-
-    .ig-tile:nth-child(5) {
-      background:
-        linear-gradient(145deg, #080808, #303030, #111);
-    }
-
-    .ig-tile:nth-child(6) {
-      background:
-        radial-gradient(circle at 65% 50%, #3a3a3a, #0e0e0e 65%);
-    }
-
-    .ig-tile::after {
-      content: "NEXAWEAR";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: rgba(255,255,255,.13);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .15em;
-    }
-
-    .instagram-follow {
-      display: flex;
-      justify-content: center;
-      margin-top: 35px;
-    }
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
-    footer {
-      border-top: 1px solid var(--border);
-      background: #060606;
-    }
-
-    .footer-main {
-      display: grid;
-      grid-template-columns: 1.5fr repeat(3, 1fr);
-      gap: 50px;
-      padding: 75px 5vw;
-    }
-
-    .footer-logo {
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: .2em;
-    }
-
-    .footer-tagline {
-      max-width: 280px;
-      margin-top: 18px;
-      color: #666;
-      font-size: 9px;
-      line-height: 1.8;
-    }
-
-    .footer-column h4 {
-      margin-bottom: 18px;
-      color: #555;
-      font-size: 8px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    .footer-column a,
-    .footer-column button {
-      display: block;
-      margin-bottom: 11px;
-      border: 0;
-      background: none;
-      color: #aaa;
-      font-size: 9px;
-      text-align: left;
-      transition: color .2s;
-    }
-
-    .footer-column a:hover,
-    .footer-column button:hover {
-      color: #fff;
-    }
-
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      padding: 18px 5vw;
-      border-top: 1px solid var(--border);
-      color: #444;
-      font-size: 8px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    /* =========================================================
-       DRAWER
-       ========================================================= */
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 1999;
-      background: rgba(0,0,0,.7);
-      opacity: 0;
-      visibility: hidden;
-      transition: .35s ease;
-      backdrop-filter: blur(5px);
-    }
-
-    .overlay.open {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .drawer {
-      position: fixed;
-      z-index: 2000;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: min(470px, 100%);
-      background: #0d0d0d;
-      border-left: 1px solid var(--border);
-      transform: translateX(100%);
-      transition: transform .45s cubic-bezier(.2,.8,.2,1);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .drawer.open {
-      transform: translateX(0);
-    }
-
-    .drawer-head {
-      min-height: 82px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 27px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .drawer-title {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .17em;
-      text-transform: uppercase;
-    }
-
-    .close-btn {
-      width: 30px;
-      height: 30px;
-      border: 0;
-      background: transparent;
-      color: #fff;
-      font-size: 22px;
-      font-weight: 300;
-    }
-
-    .drawer-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 25px;
-    }
-
-    .empty-cart {
-      min-height: 60%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: #555;
-      text-align: center;
-    }
-
-    .empty-cart strong {
-      color: #aaa;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    .empty-cart p {
-      margin-top: 7px;
-      font-size: 9px;
-    }
-
-    .cart-item {
-      display: grid;
-      grid-template-columns: 90px 1fr auto;
-      gap: 15px;
-      padding: 15px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .cart-item-image {
-      aspect-ratio: 3/4;
-      overflow: hidden;
-      background: #181818;
-    }
-
-    .cart-item-image img {
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .cart-item-name {
-      font-size: 9px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .cart-item-size {
-      margin-top: 5px;
-      color: #666;
-      font-size: 8px;
-      text-transform: uppercase;
-    }
-
-    .cart-item-price {
-      margin-top: 12px;
-      font-size: 9px;
-    }
-
-    .quantity {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .quantity button {
-      width: 20px;
-      height: 20px;
-      border: 1px solid #292929;
-      background: #111;
-      color: #fff;
-      font-size: 10px;
-    }
-
-    .quantity span {
-      font-size: 9px;
-    }
-
-    .remove-item {
-      border: 0;
-      background: none;
-      color: #555;
-      font-size: 8px;
-      text-transform: uppercase;
-    }
-
-    .remove-item:hover {
-      color: #fff;
-    }
-
-    .drawer-footer {
-      padding: 22px 25px;
-      border-top: 1px solid var(--border);
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      color: #777;
-      font-size: 9px;
-      text-transform: uppercase;
-    }
-
-    .summary-row.total {
-      margin-top: 17px;
-      padding-top: 17px;
-      border-top: 1px solid var(--border);
-      color: #fff;
-      font-size: 11px;
-    }
-
-    .checkout-btn {
-      width: 100%;
-      height: 50px;
-      margin-top: 15px;
-      border: 1px solid #fff;
-      background: #fff;
-      color: #000;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      transition: .25s;
-    }
-
-    .checkout-btn:hover {
-      background: transparent;
-      color: #fff;
-    }
-
-    /* =========================================================
-       PRODUCT MODAL
-       ========================================================= */
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 2500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 25px;
-      background: rgba(0,0,0,.82);
-      backdrop-filter: blur(12px);
-      opacity: 0;
-      visibility: hidden;
-      transition: .3s ease;
-    }
-
-    .modal.open {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .product-modal {
-      width: min(900px, 100%);
-      max-height: calc(100svh - 50px);
-      overflow-y: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: #0e0e0e;
-      border: 1px solid var(--border);
-      transform: translateY(20px);
-      transition: .35s ease;
-    }
-
-    .modal.open .product-modal {
-      transform: translateY(0);
-    }
-
-    .modal-image {
-      min-height: 580px;
-      background: #161616;
-    }
-
-    .modal-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .modal-details {
-      position: relative;
-      padding: 45px;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 30px;
-      height: 30px;
-      border: 0;
-      background: none;
-      color: #fff;
-      font-size: 20px;
-    }
-
-    .modal-details .product-name {
-      font-size: 13px;
-      padding-right: 30px;
-    }
-
-    .modal-price {
-      margin-top: 15px;
-      font-size: 14px;
-    }
-
-    .modal-description {
-      margin-top: 30px;
-      color: #777;
-      font-size: 10px;
-      line-height: 1.9;
-    }
-
-    .option-title {
-      margin: 35px 0 12px;
-      color: #777;
-      font-size: 8px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    .sizes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-
-    .size {
-      min-width: 45px;
-      height: 38px;
-      border: 1px solid #292929;
-      background: transparent;
-      color: #aaa;
-      font-size: 9px;
-      transition: .2s;
-    }
-
-    .size:hover,
-    .size.selected {
-      border-color: #fff;
-      background: #fff;
-      color: #000;
-    }
-
-    .add-cart-large {
-      width: 100%;
-      height: 50px;
-      margin-top: 30px;
-      border: 1px solid #fff;
-      background: #fff;
-      color: #000;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    .add-cart-large:hover {
-      background: transparent;
-      color: #fff;
-    }
-
-    .shipping-note {
-      margin-top: 20px;
-      color: #555;
-      font-size: 8px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    /* =========================================================
-       LOGIN / CHECKOUT
-       ========================================================= */
-
-    .simple-modal {
-      width: min(450px, 100%);
-      background: #0d0d0d;
-      border: 1px solid var(--border);
-      padding: 45px;
-    }
-
-    .simple-modal h2 {
-      font-size: 28px;
-      letter-spacing: -.04em;
-      text-transform: uppercase;
-    }
-
-    .simple-modal > p {
-      margin-top: 10px;
-      color: #666;
-      font-size: 9px;
-      line-height: 1.7;
-    }
-
-    .form-group {
-      margin-top: 22px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #777;
-      font-size: 8px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      height: 46px;
-      padding: 0 13px;
-      outline: none;
-      border: 1px solid #292929;
-      background: #111;
-      color: #fff;
-      font-size: 10px;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: #777;
-    }
-
-    .form-submit {
-      width: 100%;
-      height: 48px;
-      margin-top: 25px;
-      border: 1px solid #fff;
-      background: #fff;
-      color: #000;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-    }
-
-    .form-submit:hover {
-      background: transparent;
-      color: #fff;
-    }
-
-    .form-message {
-      margin-top: 15px;
-      color: #aaa;
-      font-size: 9px;
-      text-align: center;
-    }
-
-    /* =========================================================
-       TOAST
-       ========================================================= */
-
-    .toast {
-      position: fixed;
-      z-index: 5000;
-      right: 25px;
-      bottom: 25px;
-      max-width: 320px;
-      padding: 15px 18px;
-      background: #fff;
-      color: #000;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: .05em;
-      transform: translateY(30px);
-      opacity: 0;
-      pointer-events: none;
-      transition: .35s ease;
-    }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    /* =========================================================
-       MOBILE
-       ========================================================= */
-
-    @media (max-width: 900px) {
-      header {
-        height: 64px;
-        padding: 0 20px;
-      }
-
-      .nav {
-        grid-template-columns: 1fr auto 1fr;
-      }
-
-      .nav-left .nav-link {
-        display: none;
-      }
-
-      .nav-left {
-        gap: 15px;
-      }
-
-      .mobile-menu-btn {
-        display: block;
-      }
-
-      .nav-right {
-        gap: 15px;
-      }
-
-      .hero-content {
-        padding: 0 20px 55px;
-        display: block;
-      }
-
-      .hero h1 {
-        font-size: clamp(52px, 16vw, 100px);
-      }
-
-      .hero-meta {
-        display: none;
-      }
-
-      .section {
-        padding: 75px 20px;
-      }
-
-      .section-header {
-        display: block;
-        margin-bottom: 30px;
-      }
-
-      .section-description {
-        margin-top: 18px;
-      }
-
-      .products {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px 8px;
-      }
-
-      .product-wishlist {
-        opacity: 1;
-        transform: none;
-      }
-
-      .story {
-        grid-template-columns: 1fr;
-      }
-
-      .story-visual {
-        min-height: 450px;
-      }
-
-      .story-content {
-        padding: 60px 20px;
-        border-left: 0;
-        border-top: 1px solid var(--border);
-      }
-
-      .instagram-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .footer-main {
-        grid-template-columns: 1fr 1fr;
-        padding: 55px 20px;
-        gap: 40px 20px;
-      }
-
-      .footer-main > :first-child {
-        grid-column: 1 / -1;
-      }
-
-      .footer-bottom {
-        padding: 18px 20px;
-        gap: 10px;
-      }
-
-      .product-modal {
-        grid-template-columns: 1fr;
-        max-height: calc(100svh - 20px);
-      }
-
-      .modal-image {
-        min-height: 380px;
-        max-height: 48vh;
-      }
-
-      .modal-details {
-        padding: 30px 25px 35px;
-      }
-
-      .simple-modal {
-        padding: 30px 25px;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .announcement {
-        font-size: 7px;
-      }
-
-      .logo {
-        font-size: 17px;
-      }
-
-      .hero {
-        min-height: 92svh;
-      }
-
-      .hero-description {
-        font-size: 10px;
-      }
-
-      .hero-actions {
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .hero-actions .btn {
-        width: 100%;
-      }
-
-      .products {
-        gap: 28px 7px;
-      }
-
-      .product-name {
-        font-size: 8px;
-      }
-
-      .product-sub {
-        font-size: 7px;
-      }
-
-      .price {
-        font-size: 9px;
-      }
-
-      .quick-add {
-        font-size: 7px;
-      }
-
-      .story-visual {
-        min-height: 340px;
-      }
-
-      .instagram {
-        padding: 75px 20px;
-      }
-
-      .footer-main {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .footer-column a,
-      .footer-column button {
-        font-size: 8px;
-      }
-
-      .toast {
-        left: 15px;
-        right: 15px;
-        bottom: 15px;
-        max-width: none;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NEXAWEAR — WEAR YOUR MIND</title>
+<meta name="description" content="NEXAWEAR — polski streetwear. Wear your mind.">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#11110f;
+  --bg2:#171714;
+  --card:#1d1d1a;
+  --card2:#242420;
+  --text:#f2f0eb;
+  --muted:#99978f;
+  --line:#33332e;
+  --white:#fff;
+  --accent:#e8e5dd;
+  --green:#65d89b;
+  --red:#ff6262;
+  --radius:18px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"DM Sans",sans-serif;
+  overflow-x:hidden;
+}
+body.lock{overflow:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+.topbar{
+  height:34px;
+  background:#090909;
+  color:#aaa;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+.nav{
+  height:78px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(17,17,15,.88);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 5%;
+}
+
+.logo{
+  font-family:"Space Grotesk";
+  font-size:25px;
+  font-weight:700;
+  letter-spacing:-1.8px;
+}
+.logo span{font-weight:400;color:#8e8c85}
+
+.navlinks{
+  display:flex;
+  gap:34px;
+}
+.navlinks a{
+  font-size:11px;
+  color:#b7b5ae;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  transition:.2s;
+}
+.navlinks a:hover{color:#fff}
+
+.actions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.iconbtn{
+  width:39px;
+  height:39px;
+  border:1px solid transparent;
+  border-radius:50%;
+  background:transparent;
+  color:#eee;
+  font-size:19px;
+  position:relative;
+  transition:.2s;
+}
+.iconbtn:hover{
+  background:#242420;
+  border-color:#363631;
+}
+.count{
+  position:absolute;
+  top:-1px;
+  right:-1px;
+  min-width:16px;
+  height:16px;
+  padding:0 4px;
+  border-radius:50px;
+  background:#f0eee8;
+  color:#111;
+  display:grid;
+  place-items:center;
+  font-size:8px;
+  font-weight:700;
+}
+
+.mobile-menu{display:none}
+
+.hero{
+  min-height:calc(100vh - 112px);
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  border-bottom:1px solid var(--line);
+}
+
+.hero-copy{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:8vw 7%;
+}
+
+.eyebrow{
+  color:#77766f;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:22px;
+}
+
+.hero h1{
+  font-family:"Space Grotesk";
+  font-size:clamp(65px,9vw,145px);
+  letter-spacing:-8px;
+  line-height:.79;
+}
+.hero h1 span{color:#77756e}
+
+.hero-desc{
+  max-width:480px;
+  color:#929089;
+  font-size:14px;
+  line-height:1.75;
+  margin:34px 0;
+}
+
+.buttons{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  min-height:48px;
+  padding:0 23px;
+  border-radius:999px;
+  border:1px solid #e8e5dd;
+  background:#e8e5dd;
+  color:#111;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  font-size:10px;
+  transition:.25s;
+}
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 35px rgba(0,0,0,.3);
+}
+.btn.secondary{
+  background:transparent;
+  color:#eee;
+  border-color:#3b3b35;
+}
+.btn.secondary:hover{
+  background:#242420;
+  border-color:#55544d;
+}
+.btn.full{width:100%}
+
+.hero-art{
+  position:relative;
+  min-height:650px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 48% 35%,#55534d 0,#292925 30%,transparent 31%),
+    linear-gradient(145deg,#262621,#0b0b0a);
+}
+.hero-art:before{
+  content:"NEXA";
+  position:absolute;
+  font-family:"Space Grotesk";
+  font-size:27vw;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-18px;
+  color:rgba(255,255,255,.035);
+  right:-5vw;
+  bottom:-3vw;
+}
+.model{
+  position:absolute;
+  left:20%;
+  right:20%;
+  top:10%;
+  bottom:0;
+  background:
+    linear-gradient(140deg,rgba(255,255,255,.13),transparent 20%),
+    linear-gradient(160deg,#35352f,#080808 70%);
+  clip-path:polygon(32% 0,68% 0,77% 19%,100% 33%,86% 57%,78% 47%,75% 100%,25% 100%,22% 47%,14% 57%,0 33%,23% 19%);
+  box-shadow:inset 0 0 90px rgba(255,255,255,.04);
+}
+.model-text{
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  font-family:"Space Grotesk";
+  font-weight:700;
+  font-size:18px;
+  letter-spacing:-1px;
+}
+.hero-tag{
+  position:absolute;
+  right:5%;
+  top:10%;
+  writing-mode:vertical-rl;
+  letter-spacing:3px;
+  font-size:9px;
+  color:#77766f;
+}
+
+.marquee{
+  overflow:hidden;
+  background:#0b0b0a;
+  border-bottom:1px solid var(--line);
+}
+.track{
+  display:flex;
+  width:max-content;
+  gap:45px;
+  padding:14px 0;
+  animation:marquee 25s linear infinite;
+}
+.track span{
+  color:#85837c;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+@keyframes marquee{
+  to{transform:translateX(-50%)}
+}
+
+.section{
+  padding:105px 5%;
+}
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:30px;
+  margin-bottom:42px;
+}
+.section-title{
+  font-family:"Space Grotesk";
+  font-size:clamp(40px,5vw,70px);
+  line-height:.9;
+  letter-spacing:-4px;
+}
+.section-desc{
+  max-width:410px;
+  color:#85837d;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.filters{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+}
+.filter{
+  background:transparent;
+  color:#99978f;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:9px 15px;
+  font-size:9px;
+  letter-spacing:1.3px;
+  text-transform:uppercase;
+}
+.filter.active,.filter:hover{
+  background:#e8e5dd;
+  color:#111;
+  border-color:#e8e5dd;
+}
+
+.search-products{
+  display:none;
+  margin-bottom:20px;
+}
+.search-products.show{display:block}
+.search-products input{
+  width:100%;
+  background:#1b1b18;
+  border:1px solid var(--line);
+  color:#fff;
+  padding:14px 18px;
+  outline:none;
+  border-radius:999px;
+}
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.product-card{min-width:0}
+
+.product-image{
+  position:relative;
+  overflow:hidden;
+  aspect-ratio:4/5;
+  border-radius:16px;
+  background:#292925;
+}
+.product-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  transition:transform .4s ease, opacity .3s ease;
+  z-index:1;
+}
+.product-image:hover .product-photo{
+  transform:scale(1.035);
+}
+.product-image .quick-actions{z-index:5}
+
+.product-image:hover .quick-actions{
+  opacity:1;
+  transform:translateY(0);
+}
+.product-image:hover .shirt{
+  transform:translate(-50%,-50%) scale(1.035);
+}
+
+.p1{background:linear-gradient(145deg,#373731,#141412)}
+.p2{background:linear-gradient(145deg,#20201d,#55534b)}
+.p3{background:linear-gradient(145deg,#3f3e37,#161614)}
+.p4{background:linear-gradient(145deg,#181817,#4c4b45)}
+
+.shirt{
+  position:absolute;
+  width:61%;
+  height:75%;
+  left:50%;
+  top:52%;
+  transform:translate(-50%,-50%);
+  transition:.4s;
+  background:linear-gradient(145deg,#292926,#080808);
+  clip-path:polygon(27% 0,73% 0,82% 19%,100% 31%,87% 51%,78% 44%,75% 100%,25% 100%,22% 44%,13% 51%,0 31%,18% 19%);
+}
+.shirt.light{
+  background:linear-gradient(145deg,#ddd9d0,#8b8982);
+}
+.shirt.gray{
+  background:linear-gradient(145deg,#68665f,#252522);
+}
+.print{
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  color:#fff;
+  font-family:"Space Grotesk";
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:-1px;
+  line-height:.9;
+}
+.light .print{color:#111}
+
+.badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:3;
+  padding:6px 10px;
+  border-radius:50px;
+  background:#e8e5dd;
+  color:#111;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.badge.sale{
+  background:#111;
+  color:#fff;
+  border:1px solid #444;
+}
+
+.quick-actions{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  z-index:5;
+  display:flex;
+  gap:6px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:.25s;
+}
+.quick{
+  width:39px;
+  height:39px;
+  border-radius:50%;
+  border:1px solid #ddd;
+  background:#eee;
+  color:#111;
+  font-size:18px;
+}
+.quick:hover{background:#fff}
+
+.product-info{padding:14px 2px}
+.product-name{
+  font-size:13px;
+  font-weight:600;
+}
+.product-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:7px;
+}
+.price{font-size:12px}
+.old{
+  color:#666;
+  text-decoration:line-through;
+  margin-left:5px;
+}
+.category{
+  color:#68675f;
+  font-size:9px;
+  letter-spacing:1px;
+}
+.rating{
+  color:#aaa;
+  font-size:10px;
+  margin-top:8px;
+}
+
+.feature{
+  min-height:600px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:#080808;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.feature-copy{
+  padding:9%;
+  display:flex;
+  justify-content:center;
+  flex-direction:column;
+}
+.feature h2{
+  font-family:"Space Grotesk";
+  font-size:clamp(45px,6vw,90px);
+  line-height:.85;
+  letter-spacing:-5px;
+}
+.feature p{
+  color:#777;
+  max-width:450px;
+  font-size:13px;
+  line-height:1.8;
+  margin:28px 0;
+}
+.feature-art{
+  position:relative;
+  overflow:hidden;
+  background:
+    repeating-linear-gradient(90deg,#222 0 2px,#151515 2px 16px),
+    linear-gradient(135deg,#333,#111);
+}
+.feature-art:after{
+  content:"NO RULES";
+  position:absolute;
+  font-family:"Space Grotesk";
+  font-size:10vw;
+  font-weight:700;
+  letter-spacing:-8px;
+  color:rgba(255,255,255,.035);
+  transform:rotate(-90deg);
+  left:22%;
+  top:32%;
+  white-space:nowrap;
+}
+
+.cards3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+.info-card{
+  padding:32px;
+  background:#171714;
+  border:1px solid var(--line);
+  border-radius:16px;
+  min-height:270px;
+}
+.number{
+  color:#65635d;
+  font-family:"Space Grotesk";
+  font-size:11px;
+}
+.info-card h3{
+  font-family:"Space Grotesk";
+  font-size:25px;
+  margin:55px 0 12px;
+}
+.info-card p{
+  color:#77766f;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.instagram{
+  background:#151512;
+  padding:90px 5%;
+  border-top:1px solid var(--line);
+}
+.insta-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:35px;
+}
+.insta-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.insta{
+  position:relative;
+  aspect-ratio:1;
+  overflow:hidden;
+  background:#252520;
+}
+.insta:nth-child(1){background:linear-gradient(135deg,#101010,#4a4943)}
+.insta:nth-child(2){background:linear-gradient(135deg,#393832,#111)}
+.insta:nth-child(3){background:linear-gradient(135deg,#111,#66635c)}
+.insta:nth-child(4){background:linear-gradient(135deg,#595750,#151514)}
+.insta:before{
+  content:"@NEXAAWEAR";
+  position:absolute;
+  top:16px;
+  left:16px;
+  font-size:8px;
+  letter-spacing:2px;
+  color:#aaa;
+}
+.insta span{
+  position:absolute;
+  left:16px;
+  bottom:16px;
+  font-family:"Space Grotesk";
+  font-size:19px;
+  font-weight:600;
+}
+
+.newsletter{
+  padding:100px 5%;
+  text-align:center;
+  border-top:1px solid var(--line);
+  background:#090909;
+}
+.newsletter h2{
+  font-family:"Space Grotesk";
+  font-size:clamp(45px,7vw,90px);
+  letter-spacing:-5px;
+}
+.newsletter p{
+  color:#777;
+  max-width:450px;
+  margin:18px auto 28px;
+  font-size:13px;
+  line-height:1.7;
+}
+.news-form{
+  max-width:560px;
+  margin:auto;
+  display:flex;
+  gap:6px;
+  padding:5px;
+  border:1px solid #333;
+  background:#151514;
+  border-radius:999px;
+}
+.news-form input{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  padding:0 17px;
+}
+
+.footer{
+  background:#090909;
+  padding:65px 5% 28px;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr repeat(3,1fr);
+  gap:40px;
+  padding-bottom:55px;
+}
+.footer-logo{
+  font-family:"Space Grotesk";
+  font-size:29px;
+  font-weight:700;
+}
+.footer p{
+  max-width:340px;
+  color:#686761;
+  font-size:11px;
+  line-height:1.8;
+  margin-top:14px;
+}
+.footer h4{
+  color:#eee;
+  font-size:9px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+.footer a{
+  display:block;
+  color:#777;
+  font-size:11px;
+  margin:10px 0;
+}
+.footer a:hover{color:#fff}
+.footer-bottom{
+  border-top:1px solid #252522;
+  padding-top:22px;
+  color:#55544e;
+  font-size:9px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(12px);
+  opacity:0;
+  visibility:hidden;
+  transition:.25s;
+}
+.overlay.open{
+  opacity:1;
+  visibility:visible;
+}
+
+.drawer{
+  position:absolute;
+  top:0;
+  right:0;
+  height:100%;
+  width:min(500px,100%);
+  background:#151513;
+  border-left:1px solid #33332e;
+  transform:translateX(100%);
+  transition:.35s;
+  display:flex;
+  flex-direction:column;
+}
+.overlay.open .drawer{transform:translateX(0)}
+
+.drawer-head{
+  min-height:74px;
+  padding:0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+.drawer-title{
+  font-family:"Space Grotesk";
+  font-size:20px;
+}
+.close{
+  border:0;
+  background:transparent;
+  color:#fff;
+  font-size:27px;
+  width:38px;
+  height:38px;
+}
+.drawer-body{
+  flex:1;
+  overflow:auto;
+  padding:20px 24px;
+}
+.drawer-foot{
+  padding:20px 24px;
+  border-top:1px solid var(--line);
+}
+
+.cart-item{
+  display:grid;
+  grid-template-columns:72px 1fr auto;
+  gap:13px;
+  padding:15px 0;
+  border-bottom:1px solid var(--line);
+}
+.cart-thumb{
+  position:relative;
+  aspect-ratio:1;
+  border-radius:10px;
+  overflow:hidden;
+  background:#2c2c28;
+}
+.cart-thumb .shirt{
+  width:70%;
+  height:80%;
+}
+.cart-thumb .product-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.cart-name{font-size:12px;font-weight:600}
+.cart-size{
+  color:#77766f;
+  font-size:10px;
+  margin-top:5px;
+}
+.qty{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:9px;
+}
+.qty button{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  border:1px solid #44433d;
+  background:#20201d;
+  color:#fff;
+}
+.remove{
+  background:none;
+  border:0;
+  color:#777;
+  font-size:9px;
+  text-decoration:underline;
+  margin-top:7px;
+}
+.empty{
+  padding:90px 20px;
+  text-align:center;
+  color:#777;
+}
+.empty strong{
+  display:block;
+  color:#ddd;
+  font-family:"Space Grotesk";
+  font-size:24px;
+  margin-bottom:9px;
+}
+.total{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  margin:8px 0;
+  color:#aaa;
+}
+.total.final{
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
+  margin-top:17px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  background:rgba(0,0,0,.76);
+  backdrop-filter:blur(12px);
+  display:none;
+  place-items:center;
+  padding:18px;
+}
+.modal.open{display:grid}
+
+.modal-box{
+  width:min(520px,100%);
+  max-height:92vh;
+  overflow:auto;
+  position:relative;
+  background:#181815;
+  border:1px solid #363631;
+  border-radius:20px;
+  padding:32px;
+  box-shadow:0 30px 100px rgba(0,0,0,.5);
+}
+.modal-box h2{
+  font-family:"Space Grotesk";
+  font-size:38px;
+  letter-spacing:-3px;
+}
+.modal-sub{
+  color:#777;
+  font-size:12px;
+  line-height:1.7;
+  margin:9px 0 25px;
+}
+
+.modal-close{
+  position:absolute;
+  right:18px;
+  top:15px;
+  width:35px;
+  height:35px;
+  border:0;
+  background:transparent;
+  color:#fff;
+  font-size:25px;
+}
+
+.tabs{
+  display:flex;
+  padding:4px;
+  background:#111;
+  border-radius:999px;
+  margin-bottom:23px;
+}
+.tab{
+  flex:1;
+  border:0;
+  background:transparent;
+  color:#777;
+  padding:10px;
+  border-radius:999px;
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.tab.active{
+  color:#111;
+  background:#e8e5dd;
+}
+
+.field{margin-bottom:14px}
+.field label{
+  display:block;
+  color:#999;
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  margin-bottom:7px;
+}
+.field input,.field select{
+  width:100%;
+  height:46px;
+  border:1px solid #3a3934;
+  border-radius:9px;
+  outline:none;
+  background:#11110f;
+  color:#fff;
+  padding:0 13px;
+}
+.field input:focus,.field select:focus{border-color:#aaa}
+
+.check{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  color:#777;
+  font-size:10px;
+  line-height:1.5;
+  margin:14px 0;
+}
+.message{
+  min-height:18px;
+  font-size:10px;
+  margin:8px 0;
+}
+
+.product-modal{
+  width:min(900px,100%);
+}
+.product-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:35px;
+}
+.pm-image{
+  position:relative;
+  aspect-ratio:4/5;
+  border-radius:15px;
+  overflow:hidden;
+}
+.pm-image .product-photo{
+  position:absolute;
+  inset:0;
+}
+.pm-info h2{font-size:40px}
+.pm-price{
+  font-size:18px;
+  margin:12px 0 25px;
+}
+.pm-desc{
+  color:#777;
+  font-size:12px;
+  line-height:1.8;
+  margin-bottom:25px;
+}
+.sizes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:9px 0 20px;
+}
+.size{
+  width:47px;
+  height:41px;
+  border-radius:8px;
+  border:1px solid #3c3b36;
+  background:#111;
+  color:#aaa;
+  font-size:10px;
+}
+.size.active,.size:hover{
+  color:#111;
+  background:#e8e5dd;
+  border-color:#e8e5dd;
+}
+.stock{
+  color:var(--green);
+  font-size:9px;
+  margin:14px 0;
+}
+
+.account-user{
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#1c1c19;
+  margin-bottom:20px;
+}
+.account-user strong{
+  display:block;
+  font-family:"Space Grotesk";
+  font-size:22px;
+}
+.account-user span{
+  color:#777;
+  font-size:10px;
+}
+.account-link{
+  width:100%;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:transparent;
+  color:#ddd;
+  padding:15px 0;
+  text-align:left;
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+}
+.account-link:hover{color:#fff}
+
+.hidden{display:none!important}
+
+.toast{
+  position:fixed;
+  z-index:500;
+  bottom:24px;
+  left:50%;
+  transform:translate(-50%,20px);
+  background:#eee;
+  color:#111;
+  padding:13px 19px;
+  border-radius:999px;
+  font-size:10px;
+  box-shadow:0 10px 35px rgba(0,0,0,.35);
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+.loader{
+  position:fixed;
+  inset:0;
+  z-index:999;
+  background:#0d0d0c;
+  display:grid;
+  place-items:center;
+  transition:.5s;
+}
+.loader.hide{
+  opacity:0;
+  visibility:hidden;
+}
+.loader-logo{
+  font-family:"Space Grotesk";
+  font-size:35px;
+  letter-spacing:-2px;
+  animation:pulse 1s infinite alternate;
+}
+@keyframes pulse{to{opacity:.35}}
+
+@media(max-width:950px){
+  .navlinks{display:none}
+  .mobile-menu{display:block}
+  .hero{grid-template-columns:1fr}
+  .hero-art{min-height:550px}
+  .products{grid-template-columns:repeat(2,1fr)}
+  .feature{grid-template-columns:1fr}
+  .feature-art{min-height:420px}
+  .cards3{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .footer-grid>div:first-child{grid-column:1/-1}
+}
+@media(max-width:600px){
+  .nav{height:68px;padding:0 18px}
+  .hero-copy{padding:70px 22px}
+  .hero h1{font-size:67px;letter-spacing:-5px}
+  .hero-art{min-height:450px}
+  .section{padding:70px 18px}
+  .section-head{display:block}
+  .section-desc{margin-top:16px}
+  .products{gap:11px}
+  .product-name{font-size:11px}
+  .quick-actions{opacity:1;transform:none}
+  .instagram{padding:70px 18px}
+  .insta-head{display:block}
+  .insta-head .btn{margin-top:20px}
+  .insta-grid{grid-template-columns:repeat(2,1fr)}
+  .newsletter{padding:75px 18px}
+  .news-form{
+    display:block;
+    border:0;
+    background:transparent;
+  }
+  .news-form input{
+    height:48px;
+    width:100%;
+    background:#151514;
+    border:1px solid #333;
+    border-radius:999px;
+    margin-bottom:7px;
+  }
+  .news-form .btn{width:100%}
+  .footer{padding:55px 18px 25px}
+  .footer-grid{gap:25px}
+  .footer-bottom{display:block;line-height:2}
+  .product-grid{grid-template-columns:1fr;gap:22px}
+  .pm-info h2{font-size:31px}
+  .modal-box{padding:25px}
+}
+</style>
 </head>
 
 <body>
 
-  <!-- =======================================================
-       LOADER
-       ======================================================= -->
+<div class="loader" id="loader">
+  <div class="loader-logo">NEXAWEAR</div>
+</div>
 
-  <div class="loader" id="loader">
-    <div class="loader-inner">
-      <div class="loader-logo">NEXA</div>
-      <div class="loader-line">
-        <span></span>
-      </div>
+<div class="topbar">
+  DARMOWA DOSTAWA OD 299 ZŁ · DROP 01 · NEXAWEAR
+</div>
+
+<nav class="nav">
+  <button class="iconbtn mobile-menu" onclick="toggleMobile()" aria-label="Menu">☰</button>
+
+  <a class="logo" href="#top">NEXA<span>WEAR</span></a>
+
+  <div class="navlinks" id="navLinks">
+    <a href="#shop" onclick="closeMobile()">Sklep</a>
+    <a href="#about" onclick="closeMobile()">O nas</a>
+    <a href="#lookbook" onclick="closeMobile()">Lookbook</a>
+    <a href="#instagram" onclick="closeMobile()">Instagram</a>
+  </div>
+
+  <div class="actions">
+    <button class="iconbtn" onclick="openSearch()" aria-label="Szukaj">⌕</button>
+    <button class="iconbtn" onclick="openAccount()" aria-label="Konto">♙</button>
+    <button class="iconbtn" onclick="openCart()" aria-label="Koszyk">
+      ♧
+      <span class="count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<main id="top">
+
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">NEXAWEAR / DROP 01 / 2026</div>
+
+    <h1>
+      WEAR<br>
+      <span>YOUR</span><br>
+      MIND.
+    </h1>
+
+    <p class="hero-desc">
+      Streetwear dla ludzi, którzy nie potrzebują pozwolenia,
+      żeby być sobą. Mocne kroje, proste formy i charakter.
+    </p>
+
+    <div class="buttons">
+      <a href="#shop" class="btn">Odkryj kolekcję →</a>
+      <a href="#about" class="btn secondary">Poznaj NEXA</a>
     </div>
   </div>
 
-  <!-- =======================================================
-       TOP BAR
-       ======================================================= -->
-
-  <div class="announcement">
-    <span>
-      NEXAWEAR — NOWA KOLEKCJA &nbsp;&nbsp; ◆ &nbsp;&nbsp;
-      DARMOWA DOSTAWA OD 300 PLN &nbsp;&nbsp; ◆ &nbsp;&nbsp;
-      LIMITOWANE DROPY &nbsp;&nbsp; ◆ &nbsp;&nbsp;
-      NEXAWEAR — NOWA KOLEKCJA &nbsp;&nbsp; ◆ &nbsp;&nbsp;
-      DARMOWA DOSTAWA OD 300 PLN &nbsp;&nbsp; ◆ &nbsp;&nbsp;
-      LIMITOWANE DROPY
-    </span>
+  <div class="hero-art">
+    <div class="model">
+      <div class="model-text">NEXA<br>WEAR</div>
+    </div>
+    <div class="hero-tag">NOT FOR EVERYONE</div>
   </div>
+</section>
 
-  <!-- =======================================================
-       HEADER
-       ======================================================= -->
+<div class="marquee">
+  <div class="track">
+    <span>NEXAWEAR</span>
+    <span>WEAR YOUR MIND</span>
+    <span>DROP 01</span>
+    <span>EST. 2026</span>
+    <span>NEXAWEAR</span>
+    <span>WEAR YOUR MIND</span>
+    <span>DROP 01</span>
+    <span>EST. 2026</span>
+  </div>
+</div>
 
-  <header id="header">
-    <nav class="nav">
+<section class="section" id="shop">
 
-      <div class="nav-left">
-
-        <button
-          class="mobile-menu-btn"
-          id="mobileMenuBtn"
-          aria-label="Otwórz menu"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path d="M3 7h18M3 12h18M3 17h18"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-width="1.5"/>
-          </svg>
-        </button>
-
-        <a class="nav-link" href="#shop">SHOP</a>
-        <a class="nav-link" href="#story">NEXA</a>
-        <a class="nav-link" href="#instagram">SOCIAL</a>
-
-      </div>
-
-      <a href="#" class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
-        NEXAWEAR
-      </a>
-
-      <div class="nav-right">
-
-        <button
-          class="nav-icon"
-          onclick="openLogin()"
-          aria-label="Konto"
-        >
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="8" r="3.5"/>
-            <path d="M4.5 20c.8-3.8 3.3-5.7 7.5-5.7s6.7 1.9 7.5 5.7"/>
-          </svg>
-        </button>
-
-        <button
-          class="nav-icon"
-          onclick="openCart()"
-          aria-label="Koszyk"
-        >
-          <svg viewBox="0 0 24 24">
-            <path d="M4 5h2l2.1 11.2a2 2 0 0 0 2 1.8h6.8a2 2 0 0 0 2-1.7L20 8H7"/>
-            <circle cx="10" cy="20" r="1"/>
-            <circle cx="18" cy="20" r="1"/>
-          </svg>
-          <span class="cart-count" id="cartCount">0</span>
-        </button>
-
-      </div>
-
-    </nav>
-  </header>
-
-  <!-- =======================================================
-       HERO
-       ======================================================= -->
-
-  <main>
-
-    <section class="hero">
-
-      <div class="hero-noise"></div>
-
-      <div class="hero-content">
-
-        <div class="hero-copy">
-
-          <div class="eyebrow">
-            NEXAWEAR / EST. 2025 / POLAND
-          </div>
-
-          <h1>
-            Wear<br>
-            <span>your</span>
-            story.
-          </h1>
-
-          <p class="hero-description">
-            Niezależny streetwear dla tych, którzy nie potrzebują
-            pozwolenia, żeby wyglądać inaczej. Ciężkie materiały.
-            Oversize'owe kroje. Grafiki z własnym językiem.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#shop" class="btn white">ODKRYJ DROP</a>
-            <a href="#story" class="btn">O NEXAWEAR</a>
-          </div>
-
-        </div>
-
-        <div class="hero-meta">
-          <span>DROP 01</span>
-          <strong>AVAILABLE NOW</strong>
-          <span>PL / WORLDWIDE</span>
-        </div>
-
-      </div>
-
-      <div class="scroll-indicator">
-        SCROLL
-        <span class="scroll-line"></span>
-      </div>
-
-    </section>
-
-    <!-- =====================================================
-         MARQUEE
-         ===================================================== -->
-
-    <div class="marquee">
-      <div class="marquee-track">
-
-        <div class="marquee-item">
-          <b>◆</b> NEXAWEAR
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> NOT FOR EVERYONE
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> BUILT DIFFERENT
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> DROP 01
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> NEXAWEAR
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> NOT FOR EVERYONE
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> BUILT DIFFERENT
-        </div>
-
-        <div class="marquee-item">
-          <b>◆</b> DROP 01
-        </div>
-
-      </div>
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">01 / SHOP</div>
+      <h2 class="section-title">THE<br>COLLECTION.</h2>
     </div>
 
-    <!-- =====================================================
-         SHOP
-         ===================================================== -->
+    <p class="section-desc">
+      Cztery modele. Jeden mindset.
+      Wybierz swój wariant, rozmiar i dodaj go do koszyka.
+    </p>
+  </div>
 
-    <section class="section" id="shop">
+  <div class="filters">
+    <button class="filter active" onclick="setFilter('all',this)">Wszystkie</button>
+    <button class="filter" onclick="setFilter('tees',this)">T-shirty</button>
+    <button class="filter" onclick="setFilter('oversize',this)">Oversize</button>
+    <button class="filter" onclick="setFilter('sale',this)">Sale</button>
+  </div>
 
-      <div class="section-header">
+  <div class="search-products" id="productSearch">
+    <input id="productSearchInput" placeholder="Szukaj produktu..." oninput="renderProducts()">
+  </div>
 
-        <div>
-          <div class="section-number">01 / SHOP</div>
-          <h2 class="section-title">
-            Drop 01
-          </h2>
-        </div>
+  <div class="products" id="products"></div>
 
-        <p class="section-description">
-          Cztery pierwsze projekty NEXAWEAR.
-          Każdy z nich wykonany z ciężkiej bawełny
-          240gsm i zaprojektowany z myślą o codziennym
-          noszeniu.
-        </p>
+</section>
 
-      </div>
+<section class="feature" id="lookbook">
+  <div class="feature-copy">
+    <div class="eyebrow">02 / MANIFESTO</div>
+    <h2>NO<br>RULES.<br>JUST<br>YOU.</h2>
 
-      <div class="products" id="products"></div>
+    <p>
+      NEXAWEAR powstało z potrzeby tworzenia rzeczy,
+      które nie próbują dopasować Cię do trendu.
+      Tworzymy ubrania z charakterem, które mają zostać z Tobą
+      dłużej niż jeden sezon.
+    </p>
 
-    </section>
+    <a href="#shop" class="btn">Zobacz drop →</a>
+  </div>
 
-    <!-- =====================================================
-         STORY
-         ===================================================== -->
+  <div class="feature-art"></div>
+</section>
 
-    <section id="story">
+<section class="section" id="about">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">03 / WHY NEXA</div>
+      <h2 class="section-title">DETAILS<br>MATTER.</h2>
+    </div>
 
-      <div class="story">
+    <p class="section-desc">
+      Nie chodzi tylko o logo.
+      Liczy się każdy detal — od kroju po moment,
+      kiedy pierwszy raz zakładasz koszulkę.
+    </p>
+  </div>
 
-        <div class="story-visual">
-          <div class="story-grid"></div>
+  <div class="cards3">
 
-          <div class="story-label">
-            NEXAWEAR / BEYOND THE ORDINARY
-          </div>
-        </div>
-
-        <div class="story-content">
-
-          <div class="eyebrow">
-            02 / THE BRAND
-          </div>
-
-          <h2>
-            Nie robimy<br>
-            ubrań.<br>
-            Robimy<br>
-            charakter.
-          </h2>
-
-          <p>
-            NEXAWEAR powstało z potrzeby stworzenia rzeczy,
-            które nie wyglądają jak kolejna kopia tego samego.
-            Minimalistyczna forma spotyka się tutaj z
-            niepokojącą grafiką, ciężką bawełną i świadomie
-            surowym wykończeniem.
-          </p>
-
-          <div class="story-points">
-
-            <div class="story-point">
-              <span>01</span>
-              240GSM HEAVYWEIGHT COTTON
-            </div>
-
-            <div class="story-point">
-              <span>02</span>
-              OVERSIZED / RELAXED FIT
-            </div>
-
-            <div class="story-point">
-              <span>03</span>
-              LIMITED QUANTITY
-            </div>
-
-            <div class="story-point">
-              <span>04</span>
-              DESIGNED IN POLAND
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =====================================================
-         NEWSLETTER
-         ===================================================== -->
-
-    <section class="newsletter">
-
-      <div class="eyebrow">
-        NEXAWEAR / PRIVATE LIST
-      </div>
-
-      <h2>
-        Be first.<br>
-        Stay different.
-      </h2>
-
+    <div class="info-card">
+      <div class="number">01</div>
+      <h3>PREMIUM FIT</h3>
       <p>
-        Zapisz się, żeby jako pierwszy dowiedzieć się
-        o nowych dropach, restockach i limitowanych
-        projektach.
+        Oversize'owe kroje projektowane tak,
+        aby dobrze wyglądały solo i warstwowo.
       </p>
-
-      <form class="newsletter-form" id="newsletterForm">
-
-        <input
-          type="email"
-          id="newsletterEmail"
-          placeholder="TWÓJ EMAIL"
-          required
-        >
-
-        <button type="submit">
-          JOIN →
-        </button>
-
-      </form>
-
-    </section>
-
-    <!-- =====================================================
-         INSTAGRAM
-         ===================================================== -->
-
-    <section class="instagram" id="instagram">
-
-      <div class="section-header">
-
-        <div>
-          <div class="section-number">03 / SOCIAL</div>
-          <h2 class="section-title">
-            @nexaawear
-          </h2>
-        </div>
-
-        <p class="section-description">
-          Dołącz do świata NEXAWEAR.
-          Dropy, stylizacje i rzeczy,
-          których nie zobaczysz tutaj.
-        </p>
-
-      </div>
-
-      <div class="instagram-grid">
-
-        <a
-          class="ig-tile"
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        ></a>
-
-        <a
-          class="ig-tile"
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        ></a>
-
-        <a
-          class="ig-tile"
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        ></a>
-
-        <a
-          class="ig-tile"
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        ></a>
-
-        <a
-          class="ig-tile"
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        ></a>
-
-        <a
-          class="ig-tile"
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        ></a>
-
-      </div>
-
-      <div class="instagram-follow">
-        <a
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-          class="btn"
-        >
-          OBSERWUJ @NEXAAWEAR
-        </a>
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- =======================================================
-       FOOTER
-       ======================================================= -->
-
-  <footer>
-
-    <div class="footer-main">
-
-      <div>
-        <div class="footer-logo">NEXAWEAR</div>
-
-        <p class="footer-tagline">
-          Independent streetwear.
-          Designed to be remembered.
-          Made for people who move differently.
-        </p>
-      </div>
-
-      <div class="footer-column">
-
-        <h4>SHOP</h4>
-
-        <a href="#shop">DROP 01</a>
-        <a href="#shop">T-SHIRTS</a>
-        <a href="#shop">BESTSELLERY</a>
-
-      </div>
-
-      <div class="footer-column">
-
-        <h4>INFO</h4>
-
-        <button onclick="showInfo('shipping')">DOSTAWA</button>
-        <button onclick="showInfo('returns')">ZWROTY</button>
-        <button onclick="showInfo('terms')">REGULAMIN</button>
-        <button onclick="showInfo('privacy')">PRYWATNOŚĆ</button>
-
-      </div>
-
-      <div class="footer-column">
-
-        <h4>FOLLOW</h4>
-
-        <a
-          href="https://www.instagram.com/nexaawear/"
-          target="_blank"
-          rel="noopener"
-        >
-          INSTAGRAM
-        </a>
-
-        <button onclick="openLogin()">MOJE KONTO</button>
-        <button onclick="openCart()">KOSZYK</button>
-
-      </div>
-
     </div>
 
-    <div class="footer-bottom">
-
-      <span>© 2025 NEXAWEAR</span>
-
-      <span>MADE IN POLAND</span>
-
-      <span>ALL RIGHTS RESERVED</span>
-
+    <div class="info-card">
+      <div class="number">02</div>
+      <h3>LIMITED DROPS</h3>
+      <p>
+        Każdy drop ma swoją historię i ograniczoną dostępność.
+        Nie chcemy produkować rzeczy bez końca.
+      </p>
     </div>
 
-  </footer>
+    <div class="info-card">
+      <div class="number">03</div>
+      <h3>YOUR IDENTITY</h3>
+      <p>
+        NEXA nie mówi Ci, kim masz być.
+        Daje Ci przestrzeń, żeby pokazać, kim jesteś.
+      </p>
+    </div>
 
-  <!-- =======================================================
-       CART DRAWER
-       ======================================================= -->
+  </div>
+</section>
 
-  <div class="overlay" id="overlay" onclick="closeAll()"></div>
+<section class="instagram" id="instagram">
+  <div class="insta-head">
+    <div>
+      <div class="eyebrow">@NEXAAWEAR</div>
+      <h2 class="section-title">FOLLOW<br>THE DROP.</h2>
+    </div>
 
-  <aside class="drawer" id="cartDrawer">
+    <a
+      class="btn secondary"
+      href="https://www.instagram.com/nexaawear/"
+      target="_blank"
+      rel="noopener"
+    >
+      Instagram ↗
+    </a>
+  </div>
+
+  <div class="insta-grid">
+    <a class="insta" href="https://www.instagram.com/nexaawear/" target="_blank">
+      <span>DROP 01</span>
+    </a>
+    <a class="insta" href="https://www.instagram.com/nexaawear/" target="_blank">
+      <span>DETAILS</span>
+    </a>
+    <a class="insta" href="https://www.instagram.com/nexaawear/" target="_blank">
+      <span>STREET</span>
+    </a>
+    <a class="insta" href="https://www.instagram.com/nexaawear/" target="_blank">
+      <span>NEXA LIFE</span>
+    </a>
+  </div>
+</section>
+
+<section class="newsletter">
+  <div class="eyebrow">NEXA LETTER</div>
+
+  <h2>BE FIRST.</h2>
+
+  <p>
+    Zapisz się i jako pierwszy dowiedz się o nowych dropach,
+    limitowanych sztukach i kodach rabatowych.
+  </p>
+
+  <form class="news-form" onsubmit="subscribe(event)">
+    <input
+      id="newsletterEmail"
+      type="email"
+      required
+      placeholder="Twój adres e-mail"
+    >
+    <button class="btn" type="submit">Dołącz →</button>
+  </form>
+</section>
+
+</main>
+
+<footer class="footer">
+
+  <div class="footer-grid">
+
+    <div>
+      <div class="footer-logo">NEXAWEAR</div>
+      <p>
+        Wear your mind.
+        Polska marka streetwearowa tworzona z myślą o indywidualności.
+      </p>
+    </div>
+
+    <div>
+      <h4>Sklep</h4>
+      <a href="#shop">Kolekcja</a>
+      <a href="#shop">T-shirty</a>
+      <a href="#shop" onclick="setFilter('sale')">Sale</a>
+    </div>
+
+    <div>
+      <h4>Pomoc</h4>
+      <a href="#" onclick="showInfo('Dostawa')">Dostawa</a>
+      <a href="#" onclick="showInfo('Zwroty')">Zwroty</a>
+      <a href="#" onclick="showInfo('Tabela rozmiarów')">Tabela rozmiarów</a>
+    </div>
+
+    <div>
+      <h4>Social</h4>
+      <a href="https://www.instagram.com/nexaawear/" target="_blank">Instagram</a>
+      <a href="#" onclick="openAccount()">Moje konto</a>
+      <a href="#top">Do góry ↑</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 NEXAWEAR. ALL RIGHTS RESERVED.</span>
+    <span>POLSKA · STREETWEAR · NEXA</span>
+  </div>
+
+</footer>
+
+
+<!-- KOSZYK -->
+
+<div class="overlay" id="cartOverlay" onclick="outsideClose(event,'cartOverlay')">
+
+  <aside class="drawer">
 
     <div class="drawer-head">
-
-      <div class="drawer-title">
-        TWÓJ KOSZYK
-      </div>
-
-      <button class="close-btn" onclick="closeCart()">
-        ×
-      </button>
-
+      <div class="drawer-title">Twój koszyk</div>
+      <button class="close" onclick="closeOverlay('cartOverlay')">×</button>
     </div>
 
     <div class="drawer-body" id="cartBody"></div>
 
-    <div class="drawer-footer">
+    <div class="drawer-foot">
 
-      <div class="summary-row">
+      <div class="total">
         <span>Produkty</span>
-        <span id="cartSubtotal">0 PLN</span>
+        <strong id="subtotal">0,00 zł</strong>
       </div>
 
-      <div class="summary-row">
+      <div class="total">
         <span>Dostawa</span>
-        <span id="cartShipping">0 PLN</span>
+        <span id="shipping">0,00 zł</span>
       </div>
 
-      <div class="summary-row total">
+      <div class="total final">
         <span>Razem</span>
-        <span id="cartTotal">0 PLN</span>
+        <span id="grandTotal">0,00 zł</span>
       </div>
 
-      <button class="checkout-btn" onclick="openCheckout()">
-        PRZEJDŹ DO PŁATNOŚCI
+      <button class="btn full" onclick="checkout()">
+        Przejdź do zamówienia →
       </button>
 
     </div>
 
   </aside>
 
-  <!-- =======================================================
-       PRODUCT MODAL
-       ======================================================= -->
+</div>
 
-  <div class="modal" id="productModal">
 
-    <div class="product-modal">
+<!-- KONTO -->
 
-      <div class="modal-image">
-        <img id="modalImage" src="" alt="">
+<div class="overlay" id="accountOverlay" onclick="outsideClose(event,'accountOverlay')">
+
+  <aside class="drawer">
+
+    <div class="drawer-head">
+      <div class="drawer-title">Moje konto</div>
+      <button class="close" onclick="closeOverlay('accountOverlay')">×</button>
+    </div>
+
+    <div class="drawer-body">
+
+      <div id="loggedOut">
+
+        <div style="padding:35px 0">
+
+          <div class="eyebrow">NEXA ACCOUNT</div>
+
+          <h2 style="font-family:'Space Grotesk';font-size:35px;line-height:.9;letter-spacing:-2px">
+            TWOJE<br>NEXA.
+          </h2>
+
+          <p style="color:#777;font-size:12px;line-height:1.7;margin:18px 0 25px">
+            Załóż konto, zapisuj dane i miej swoje zamówienia zawsze pod ręką.
+          </p>
+
+          <button class="btn full" onclick="openAuth('register')">
+            Utwórz konto →
+          </button>
+
+          <button class="btn secondary full" style="margin-top:8px" onclick="openAuth('login')">
+            Zaloguj się
+          </button>
+
+        </div>
+
       </div>
 
-      <div class="modal-details">
+      <div id="loggedIn" class="hidden">
 
-        <button class="modal-close" onclick="closeProduct()">
-          ×
+        <div class="account-user">
+          <div class="eyebrow">ZALOGOWANO</div>
+          <strong id="accountName">NEXA USER</strong>
+          <span id="accountEmail"></span>
+        </div>
+
+        <button class="account-link" onclick="showOrders()">
+          Moje zamówienia <span>→</span>
         </button>
 
-        <div class="eyebrow">
-          NEXAWEAR / DROP 01
-        </div>
-
-        <div class="product-name" id="modalName"></div>
-
-        <div class="modal-price" id="modalPrice"></div>
-
-        <p class="modal-description" id="modalDescription"></p>
-
-        <div class="option-title">
-          WYBIERZ ROZMIAR
-        </div>
-
-        <div class="sizes">
-
-          <button class="size" onclick="selectSize(this)">XS</button>
-          <button class="size" onclick="selectSize(this)">S</button>
-          <button class="size selected" onclick="selectSize(this)">M</button>
-          <button class="size" onclick="selectSize(this)">L</button>
-          <button class="size" onclick="selectSize(this)">XL</button>
-          <button class="size" onclick="selectSize(this)">XXL</button>
-
-        </div>
-
-        <button
-          class="add-cart-large"
-          onclick="addModalProductToCart()"
-        >
-          DODAJ DO KOSZYKA
+        <button class="account-link" onclick="showAccountDetails()">
+          Dane konta <span>→</span>
         </button>
 
-        <div class="shipping-note">
-          Darmowa dostawa od 300 PLN.<br>
-          Wysyłka z Polski.
+        <button class="account-link" onclick="showAddresses()">
+          Adresy dostawy <span>→</span>
+        </button>
+
+        <button class="account-link" onclick="logout()">
+          Wyloguj się <span>→</span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+</div>
+
+
+<!-- LOGOWANIE / REJESTRACJA -->
+
+<div class="modal" id="authModal">
+
+  <div class="modal-box">
+
+    <button class="modal-close" onclick="closeModal('authModal')">×</button>
+
+    <div class="eyebrow">NEXA ACCOUNT</div>
+
+    <h2>WELCOME.</h2>
+
+    <p class="modal-sub">
+      Załóż konto albo zaloguj się do NEXAWEAR.
+    </p>
+
+    <div class="tabs">
+      <button class="tab active" id="loginTab" onclick="switchAuth('login')">
+        Logowanie
+      </button>
+
+      <button class="tab" id="registerTab" onclick="switchAuth('register')">
+        Rejestracja
+      </button>
+    </div>
+
+    <form id="authForm" onsubmit="handleAuth(event)">
+
+      <div class="field hidden" id="nameField">
+        <label>Imię</label>
+        <input id="authName" type="text" placeholder="Twoje imię">
+      </div>
+
+      <div class="field">
+        <label>E-mail</label>
+        <input id="authEmail" type="email" required placeholder="name@email.com">
+      </div>
+
+      <div class="field">
+        <label>Hasło</label>
+        <input id="authPassword" type="password" required minlength="6" placeholder="Minimum 6 znaków">
+      </div>
+
+      <div class="check hidden" id="termsField">
+        <input id="terms" type="checkbox">
+        <label for="terms">
+          Akceptuję regulamin sklepu i politykę prywatności.
+        </label>
+      </div>
+
+      <div class="message" id="authMessage"></div>
+
+      <button class="btn full" id="authSubmit">
+        Zaloguj się →
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- PRODUKT -->
+
+<div class="modal" id="productModal">
+
+  <div class="modal-box product-modal">
+
+    <button class="modal-close" onclick="closeModal('productModal')">×</button>
+
+    <div class="product-grid">
+
+      <div id="pmImage" class="pm-image"></div>
+
+      <div class="pm-info">
+
+        <div class="eyebrow" id="pmCat"></div>
+
+        <h2 id="pmName"></h2>
+
+        <div class="pm-price" id="pmPrice"></div>
+
+        <p class="pm-desc" id="pmDesc"></p>
+
+        <strong style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase">
+          Rozmiar
+        </strong>
+
+        <div class="sizes" id="sizes"></div>
+
+        <div class="stock">
+          ● Dostępny — wysyłka w 1–2 dni robocze
         </div>
+
+        <button class="btn full" onclick="addFromModal()">
+          Dodaj do koszyka →
+        </button>
 
       </div>
 
@@ -2193,1182 +1594,1202 @@
 
   </div>
 
-  <!-- =======================================================
-       LOGIN MODAL
-       ======================================================= -->
+</div>
 
-  <div class="modal" id="loginModal">
 
-    <div class="simple-modal">
+<!-- WYSZUKIWANIE -->
 
-      <button class="modal-close" onclick="closeLogin()">
-        ×
-      </button>
+<div class="modal" id="searchModal">
 
-      <div class="eyebrow">
-        NEXAWEAR / ACCOUNT
-      </div>
+  <div class="modal-box">
 
-      <h2>Twoje konto</h2>
+    <button class="modal-close" onclick="closeModal('searchModal')">×</button>
 
-      <p>
-        Zaloguj się, aby zachować dane, śledzić zamówienia
-        i szybciej przechodzić przez kolejne zakupy.
-      </p>
+    <div class="eyebrow">NEXA SEARCH</div>
 
-      <form id="loginForm">
+    <h2>SZUKAJ.</h2>
 
-        <div class="form-group">
+    <p class="modal-sub">
+      Znajdź swój model.
+    </p>
 
-          <label for="loginEmail">
-            Email
-          </label>
-
-          <input
-            id="loginEmail"
-            type="email"
-            placeholder="email@example.com"
-            required
-          >
-
-        </div>
-
-        <div class="form-group">
-
-          <label for="loginPassword">
-            Hasło
-          </label>
-
-          <input
-            id="loginPassword"
-            type="password"
-            placeholder="••••••••"
-            required
-          >
-
-        </div>
-
-        <button class="form-submit" type="submit">
-          ZALOGUJ SIĘ
-        </button>
-
-      </form>
-
-      <div class="form-message" id="loginMessage"></div>
-
+    <div class="field">
+      <input
+        id="globalSearch"
+        type="text"
+        placeholder="Np. Shadow, Glitch..."
+        oninput="globalSearch()"
+      >
     </div>
+
+    <div id="searchResults"></div>
 
   </div>
 
-  <!-- =======================================================
-       CHECKOUT MODAL
-       ======================================================= -->
+</div>
 
-  <div class="modal" id="checkoutModal">
 
-    <div class="simple-modal">
+<!-- CHECKOUT -->
 
-      <button class="modal-close" onclick="closeCheckout()">
-        ×
-      </button>
+<div class="modal" id="checkoutModal">
 
-      <div class="eyebrow">
-        NEXAWEAR / CHECKOUT
+  <div class="modal-box">
+
+    <button class="modal-close" onclick="closeModal('checkoutModal')">×</button>
+
+    <div class="eyebrow">CHECKOUT</div>
+
+    <h2>FINAL STEP.</h2>
+
+    <p class="modal-sub">
+      Uzupełnij dane dostawy, wybierz metodę płatności i potwierdź zamówienie.
+    </p>
+
+    <form onsubmit="placeOrder(event)">
+
+      <div class="field">
+        <label>Imię i nazwisko</label>
+        <input id="checkoutName" required placeholder="Jan Kowalski">
       </div>
 
-      <h2>Zamówienie</h2>
+      <div class="field">
+        <label>E-mail</label>
+        <input id="checkoutEmail" type="email" required placeholder="jan@email.com">
+      </div>
 
-      <p>
-        Uzupełnij dane. Na tym etapie jest to gotowy
-        frontend sklepu — prawdziwe pobieranie płatności
-        wymaga podłączenia operatora płatności i backendu.
-      </p>
+      <div class="field">
+        <label>Adres</label>
+        <input id="checkoutAddress" required placeholder="Ulica i numer">
+      </div>
 
-      <form id="checkoutForm">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
 
-        <div class="form-group">
-          <label>Imię i nazwisko</label>
-          <input type="text" id="checkoutName" required>
-        </div>
-
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="checkoutEmail" required>
-        </div>
-
-        <div class="form-group">
-          <label>Adres</label>
-          <input type="text" id="checkoutAddress" required>
-        </div>
-
-        <div class="form-group">
+        <div class="field">
           <label>Kod pocztowy</label>
-          <input type="text" id="checkoutZip" placeholder="00-000" required>
+          <input id="checkoutZip" required placeholder="00-000">
         </div>
 
-        <div class="form-group">
-          <label>Metoda płatności</label>
-
-          <select id="paymentMethod">
-
-            <option value="blik">
-              BLIK
-            </option>
-
-            <option value="card">
-              Karta płatnicza
-            </option>
-
-            <option value="transfer">
-              Przelew online
-            </option>
-
-            <option value="cod">
-              Pobranie
-            </option>
-
-          </select>
-
+        <div class="field">
+          <label>Miasto</label>
+          <input id="checkoutCity" required placeholder="Warszawa">
         </div>
 
-        <button class="form-submit" type="submit">
-          ZŁÓŻ ZAMÓWIENIE
-        </button>
-
-      </form>
-
-      <div class="form-message" id="checkoutMessage"></div>
-
-    </div>
-
-  </div>
-
-  <!-- =======================================================
-       INFO MODAL
-       ======================================================= -->
-
-  <div class="modal" id="infoModal">
-
-    <div class="simple-modal">
-
-      <button class="modal-close" onclick="closeInfo()">
-        ×
-      </button>
-
-      <div class="eyebrow" id="infoEyebrow">
-        NEXAWEAR / INFO
       </div>
 
-      <h2 id="infoTitle"></h2>
+      <div class="field">
+        <label>Metoda płatności</label>
 
-      <p
-        id="infoContent"
-        style="margin-top:22px;line-height:2;color:#777;"
-      ></p>
+        <select id="payment">
+          <option>Karta płatnicza</option>
+          <option>BLIK</option>
+          <option>Przelewy24</option>
+          <option>Przelew tradycyjny</option>
+        </select>
+      </div>
 
-    </div>
+      <div class="check">
+        <input type="checkbox" required>
+        <label>
+          Akceptuję regulamin i potwierdzam zamówienie.
+        </label>
+      </div>
+
+      <button class="btn full">
+        Potwierdzam zamówienie →
+      </button>
+
+    </form>
 
   </div>
 
-  <!-- =======================================================
-       TOAST
-       ======================================================= -->
-
-  <div class="toast" id="toast"></div>
-
-  <!-- =======================================================
-       JAVASCRIPT
-       ======================================================= -->
-
-  <script>
-
-    /*
-    ============================================================
-    PRODUKTY
-
-    TUTAJ PÓŹNIEJ PODMIENIASZ TYLKO ŚCIEŻKI DO ZDJĘĆ.
-
-    Przykład:
-
-    image: "images/shadowform.jpg"
-
-    Możesz również wrzucić zdjęcia do folderu:
-    /images/
-
-    i nazwać je np.:
-
-    shadowform.jpg
-    glitch-mind.jpg
-    lost-soul.jpg
-    fade-logo.jpg
-
-    Reszta strony pozostaje bez zmian.
-    ============================================================
-    */
-
-    const PRODUCTS = [
-
-      {
-        id: 1,
-        name: "05 / SHADOWFORM TEE",
-        shortName: "SHADOWFORM TEE",
-        subtitle: "VINTAGE WHITE",
-        price: 210,
-        image: "images/shadowform.jpg",
-        description:
-          "Heavyweight T-shirt wykonany ze 100% bawełny 240gsm. Vintage white, luźny krój i centralna grafika Shadowform."
-      },
-
-      {
-        id: 2,
-        name: "01 / GLITCH MIND TEE",
-        shortName: "GLITCH MIND TEE",
-        subtitle: "WASHED BLACK",
-        price: 190,
-        image: "images/glitch-mind.jpg",
-        description:
-          "Washed black heavyweight tee z charakterystyczną grafiką Glitch Mind. Surowy wygląd i oversize'owy fit."
-      },
-
-      {
-        id: 3,
-        name: "02 / LOST SOUL TEE",
-        shortName: "LOST SOUL TEE",
-        subtitle: "VINTAGE WHITE",
-        price: 190,
-        image: "images/lost-soul.jpg",
-        description:
-          "Vintage white T-shirt z dużym front printem. 100% cotton 240gsm, projekt inspirowany estetyką NEXAWEAR."
-      },
-
-      {
-        id: 4,
-        name: "04 / FADE LOGO TEE",
-        shortName: "FADE LOGO TEE",
-        subtitle: "WASHED BLACK",
-        price: 180,
-        image: "images/fade-logo.jpg",
-        description:
-          "Minimalistyczny washed black tee z rozmytym logo NEXAWEAR. Prosty projekt z charakterystycznym wykończeniem."
-      }
-
-    ];
+</div>
 
 
-    /*
-    ============================================================
-    STAN
-    ============================================================
-    */
-
-    let cart = JSON.parse(localStorage.getItem("nexa_cart") || "[]");
-
-    let currentProduct = null;
-
-    let selectedSize = "M";
+<div class="toast" id="toast"></div>
 
 
-    /*
-    ============================================================
-    ELEMENTY
-    ============================================================
-    */
+<script>
 
-    const loader = document.getElementById("loader");
-    const header = document.getElementById("header");
-    const productsContainer = document.getElementById("products");
-    const cartCount = document.getElementById("cartCount");
-    const cartBody = document.getElementById("cartBody");
-    const cartSubtotal = document.getElementById("cartSubtotal");
-    const cartShipping = document.getElementById("cartShipping");
-    const cartTotal = document.getElementById("cartTotal");
-    const overlay = document.getElementById("overlay");
-    const cartDrawer = document.getElementById("cartDrawer");
-    const toast = document.getElementById("toast");
+const PRODUCTS = [
 
+  {
+    id:1,
+    name:"SHADOWFORM TEE",
+    price:149,
+    category:"tees",
+    type:"oversize",
+    bg:"p1",
+    image:"image.webp",
+    shirt:"",
+    print:"NEXA<br>FORM",
+    desc:"Ciężki, oversize'owy T-shirt z minimalistycznym brandingiem NEXA. Mocny materiał i nowoczesny krój."
+  },
 
-    /*
-    ============================================================
-    START
-    ============================================================
-    */
+  {
+    id:2,
+    name:"GLITCH MIND TEE",
+    price:159,
+    category:"tees",
+    type:"oversize",
+    bg:"p2",
+    image:"image (3).webp",
+    shirt:"",
+    print:"GLITCH<br>MIND",
+    desc:"Najbardziej charakterystyczny model dropu. Graficzny front, szeroki krój i estetyka underground."
+  },
 
-    window.addEventListener("load", () => {
+  {
+    id:3,
+    name:"LOST SOUL TEE",
+    price:139,
+    category:"tees",
+    type:"tees",
+    bg:"p3",
+    image:"image (2).webp",
+    shirt:"light",
+    print:"LOST<br>SOUL",
+    desc:"Jasna wersja kolekcji. Minimalistyczna forma z kontrastową grafiką."
+  },
 
-      setTimeout(() => {
-        loader.classList.add("hide");
-      }, 650);
+  {
+    id:4,
+    name:"FADE LOGO TEE",
+    price:119,
+    old:149,
+    category:"sale",
+    type:"tees",
+    bg:"p4",
+    image:"image (1).webp",
+    shirt:"gray",
+    print:"NEXA",
+    desc:"Klasyczny model NEXA z subtelnym efektem fade. Teraz w cenie specjalnej."
+  }
 
-      renderProducts();
-      renderCart();
-      updateHeader();
+];
 
+let cart = JSON.parse(localStorage.getItem("nexa_cart") || "[]");
+let currentFilter = "all";
+let selectedProduct = null;
+let selectedSize = "M";
+
+function money(value){
+  return Number(value).toFixed(2).replace(".",",")+" zł";
+}
+
+function saveCart(){
+  localStorage.setItem("nexa_cart",JSON.stringify(cart));
+  updateCart();
+}
+
+function renderProducts(){
+
+  const root = document.getElementById("products");
+
+  const query =
+    document.getElementById("productSearchInput")?.value
+    ?.trim()
+    .toLowerCase() || "";
+
+  const list = PRODUCTS.filter(product => {
+
+    const filterMatch =
+      currentFilter === "all" ||
+      product.category === currentFilter ||
+      product.type === currentFilter;
+
+    const searchMatch =
+      !query ||
+      product.name.toLowerCase().includes(query);
+
+    return filterMatch && searchMatch;
+
+  });
+
+  if(!list.length){
+
+    root.innerHTML = `
+      <div style="
+        grid-column:1/-1;
+        text-align:center;
+        padding:70px 10px;
+        color:#777;
+      ">
+        Nie znaleziono produktów.
+      </div>
+    `;
+
+    return;
+  }
+
+  root.innerHTML = list.map(product => `
+
+    <article class="product-card">
+
+      <div class="product-image ${product.bg}">
+
+        ${
+          product.old
+          ? `<div class="badge sale">SALE</div>`
+          : ""
+        }
+
+        <img
+          class="product-photo"
+          src="${product.image}"
+          alt="${product.name}"
+          loading="lazy"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+        >
+
+        <div class="shirt ${product.shirt}" style="display:none">
+          <div class="print">${product.print}</div>
+        </div>
+
+        <div class="quick-actions">
+
+          <button
+            class="quick"
+            onclick="openProduct(${product.id})"
+            aria-label="Zobacz produkt"
+          >⌕</button>
+
+          <button
+            class="quick"
+            onclick="quickAdd(${product.id})"
+            aria-label="Dodaj produkt"
+          >+</button>
+
+        </div>
+
+      </div>
+
+      <div class="product-info">
+
+        <div class="product-name">
+          ${product.name}
+        </div>
+
+        <div class="product-row">
+
+          <span class="price">
+            ${money(product.price)}
+
+            ${
+              product.old
+              ? `<span class="old">${money(product.old)}</span>`
+              : ""
+            }
+          </span>
+
+          <span class="category">
+            UNISEX
+          </span>
+
+        </div>
+
+        <div class="rating">
+          ★★★★★ <span>4.9</span>
+        </div>
+
+      </div>
+
+    </article>
+
+  `).join("");
+
+}
+
+function setFilter(filter,button){
+
+  currentFilter = filter;
+
+  document
+    .querySelectorAll(".filter")
+    .forEach(element => element.classList.remove("active"));
+
+  if(button){
+    button.classList.add("active");
+  }
+
+  renderProducts();
+}
+
+function openProduct(id){
+
+  selectedProduct = PRODUCTS.find(product => product.id === id);
+
+  if(!selectedProduct) return;
+
+  document.getElementById("pmName").textContent =
+    selectedProduct.name;
+
+  document.getElementById("pmPrice").innerHTML =
+    money(selectedProduct.price) +
+    (
+      selectedProduct.old
+      ? `<del style="color:#666;font-size:12px;margin-left:8px">
+          ${money(selectedProduct.old)}
+        </del>`
+      : ""
+    );
+
+  document.getElementById("pmCat").textContent =
+    selectedProduct.category === "sale"
+    ? "NEXAWEAR / SALE"
+    : "NEXAWEAR / DROP 01";
+
+  document.getElementById("pmDesc").textContent =
+    selectedProduct.desc;
+
+  const image = document.getElementById("pmImage");
+
+  image.className =
+    "pm-image " + selectedProduct.bg;
+
+  image.innerHTML = `
+    <img
+      class="product-photo"
+      src="${selectedProduct.image}"
+      alt="${selectedProduct.name}"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+    >
+    <div class="shirt ${selectedProduct.shirt}" style="display:none">
+      <div class="print">${selectedProduct.print}</div>
+    </div>
+  `;
+
+  document.getElementById("sizes").innerHTML =
+    ["XS","S","M","L","XL","XXL"].map(size => `
+
+      <button
+        class="size ${size === selectedSize ? "active" : ""}"
+        onclick="selectSize('${size}',this)"
+      >
+        ${size}
+      </button>
+
+    `).join("");
+
+  openModal("productModal");
+
+}
+
+function selectSize(size,button){
+
+  selectedSize = size;
+
+  document
+    .querySelectorAll(".size")
+    .forEach(element => element.classList.remove("active"));
+
+  button.classList.add("active");
+
+}
+
+function quickAdd(id){
+
+  selectedProduct = PRODUCTS.find(product => product.id === id);
+
+  if(!selectedProduct) return;
+
+  addToCart(selectedProduct.id,"M");
+
+}
+
+function addFromModal(){
+
+  if(!selectedProduct) return;
+
+  addToCart(selectedProduct.id,selectedSize);
+
+  closeModal("productModal");
+
+  openCart();
+
+}
+
+function addToCart(id,size){
+
+  const existing = cart.find(
+    item => item.id === id && item.size === size
+  );
+
+  if(existing){
+
+    existing.qty++;
+
+  }else{
+
+    cart.push({
+      id,
+      size,
+      qty:1
     });
 
+  }
 
-    /*
-    ============================================================
-    HEADER SCROLL
-    ============================================================
-    */
+  saveCart();
 
-    window.addEventListener("scroll", updateHeader);
+  const product = PRODUCTS.find(item => item.id === id);
 
-    function updateHeader() {
+  showToast(
+    `${product.name} / ${size} dodano do koszyka`
+  );
 
-      if (window.scrollY > 50) {
-        header.classList.add("scrolled");
-      } else {
-        header.classList.remove("scrolled");
-      }
+}
 
-    }
+function updateCart(){
 
+  const count =
+    cart.reduce((sum,item) => sum + item.qty,0);
 
-    /*
-    ============================================================
-    PRODUCTS
-    ============================================================
-    */
+  document.getElementById("cartCount").textContent = count;
 
-    function renderProducts() {
+  const body = document.getElementById("cartBody");
 
-      productsContainer.innerHTML = PRODUCTS.map(product => `
+  if(!cart.length){
 
-        <article
-          class="product"
-          onclick="openProduct(${product.id})"
-        >
+    body.innerHTML = `
+      <div class="empty">
+        <strong>KOSZYK JEST PUSTY.</strong>
+        <p>Dodaj coś, co naprawdę do Ciebie pasuje.</p>
+      </div>
+    `;
 
-          <div class="product-image">
+  }else{
 
-            <span class="product-badge">
-              DROP 01
-            </span>
+    body.innerHTML = cart.map((item,index) => {
 
-            <button
-              class="product-wishlist"
-              onclick="event.stopPropagation();toggleWishlist(this)"
-              aria-label="Dodaj do ulubionych"
-            >
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M20.8 8.7c0 5-8.8 10.3-8.8 10.3S3.2 13.7 3.2 8.7A4.7 4.7 0 0 1 12 6.1a4.7 4.7 0 0 1 8.8 2.6Z"
-                />
-              </svg>
-            </button>
+      const product =
+        PRODUCTS.find(p => p.id === item.id);
 
+      return `
+
+        <div class="cart-item">
+
+          <div class="cart-thumb ${product.bg}">
             <img
+              class="product-photo"
               src="${product.image}"
               alt="${product.name}"
               loading="lazy"
-              onerror="this.style.opacity='.18'"
             >
-
           </div>
 
-          <div class="product-info">
+          <div>
 
-            <div class="product-name">
+            <div class="cart-name">
               ${product.name}
             </div>
 
-            <div class="product-sub">
-              ${product.subtitle} · 100% COTTON 240GSM
+            <div class="cart-size">
+              Rozmiar: ${item.size}
             </div>
 
-            <div class="product-bottom">
+            <div class="qty">
 
-              <span class="price">
-                ${product.price} PLN
-              </span>
+              <button onclick="changeQty(${index},-1)">
+                −
+              </button>
 
-              <button
-                class="quick-add"
-                onclick="event.stopPropagation();quickAdd(${product.id})"
-              >
-                + DODAJ
+              <span>${item.qty}</span>
+
+              <button onclick="changeQty(${index},1)">
+                +
               </button>
 
             </div>
 
-          </div>
-
-        </article>
-
-      `).join("");
-
-    }
-
-
-    /*
-    ============================================================
-    PRODUCT MODAL
-    ============================================================
-    */
-
-    function openProduct(id) {
-
-      currentProduct = PRODUCTS.find(product => product.id === id);
-
-      if (!currentProduct) return;
-
-      document.getElementById("modalImage").src = currentProduct.image;
-      document.getElementById("modalImage").alt = currentProduct.name;
-
-      document.getElementById("modalName").textContent =
-        currentProduct.name;
-
-      document.getElementById("modalPrice").textContent =
-        currentProduct.price + " PLN";
-
-      document.getElementById("modalDescription").textContent =
-        currentProduct.description;
-
-      selectedSize = "M";
-
-      document
-        .querySelectorAll(".size")
-        .forEach(button => {
-          button.classList.toggle(
-            "selected",
-            button.textContent === "M"
-          );
-        });
-
-      document.getElementById("productModal")
-        .classList.add("open");
-
-      document.body.classList.add("no-scroll");
-
-    }
-
-
-    function closeProduct() {
-
-      document.getElementById("productModal")
-        .classList.remove("open");
-
-      document.body.classList.remove("no-scroll");
-
-      currentProduct = null;
-
-    }
-
-
-    function selectSize(button) {
-
-      document
-        .querySelectorAll(".size")
-        .forEach(size => {
-          size.classList.remove("selected");
-        });
-
-      button.classList.add("selected");
-
-      selectedSize = button.textContent;
-
-    }
-
-
-    function addModalProductToCart() {
-
-      if (!currentProduct) return;
-
-      addToCart(
-        currentProduct.id,
-        selectedSize
-      );
-
-      closeProduct();
-
-    }
-
-
-    /*
-    ============================================================
-    QUICK ADD
-    ============================================================
-    */
-
-    function quickAdd(id) {
-
-      addToCart(id, "M");
-
-    }
-
-
-    /*
-    ============================================================
-    CART
-    ============================================================
-    */
-
-    function addToCart(id, size = "M") {
-
-      const product = PRODUCTS.find(item => item.id === id);
-
-      if (!product) return;
-
-      const existing = cart.find(item =>
-        item.id === id &&
-        item.size === size
-      );
-
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        cart.push({
-          id,
-          size,
-          quantity: 1
-        });
-      }
-
-      saveCart();
-      renderCart();
-
-      showToast(
-        `${product.shortName} — rozmiar ${size} dodano do koszyka`
-      );
-
-    }
-
-
-    function removeFromCart(index) {
-
-      cart.splice(index, 1);
-
-      saveCart();
-      renderCart();
-
-    }
-
-
-    function changeQuantity(index, amount) {
-
-      cart[index].quantity += amount;
-
-      if (cart[index].quantity <= 0) {
-        cart.splice(index, 1);
-      }
-
-      saveCart();
-      renderCart();
-
-    }
-
-
-    function saveCart() {
-
-      localStorage.setItem(
-        "nexa_cart",
-        JSON.stringify(cart)
-      );
-
-    }
-
-
-    function renderCart() {
-
-      const totalItems = cart.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
-
-      cartCount.textContent = totalItems;
-
-      if (!cart.length) {
-
-        cartBody.innerHTML = `
-
-          <div class="empty-cart">
-
-            <strong>
-              TWÓJ KOSZYK JEST PUSTY
-            </strong>
-
-            <p>
-              Dodaj coś z pierwszego dropu.
-            </p>
-
             <button
-              class="btn"
-              style="margin-top:20px"
-              onclick="closeCart();document.getElementById('shop').scrollIntoView({behavior:'smooth'})"
+              class="remove"
+              onclick="removeItem(${index})"
             >
-              PRZEJDŹ DO SHOPU
+              Usuń
             </button>
 
           </div>
 
-        `;
+          <strong>
+            ${money(product.price * item.qty)}
+          </strong>
 
-        cartSubtotal.textContent = "0 PLN";
-        cartShipping.textContent = "0 PLN";
-        cartTotal.textContent = "0 PLN";
+        </div>
 
+      `;
+
+    }).join("");
+
+  }
+
+  const subtotal =
+    cart.reduce((sum,item) => {
+
+      const product =
+        PRODUCTS.find(p => p.id === item.id);
+
+      return sum + product.price * item.qty;
+
+    },0);
+
+  const shipping =
+    subtotal === 0
+    ? 0
+    : subtotal >= 299
+      ? 0
+      : 14.99;
+
+  document.getElementById("subtotal").textContent =
+    money(subtotal);
+
+  document.getElementById("shipping").textContent =
+    shipping === 0
+    ? "GRATIS"
+    : money(shipping);
+
+  document.getElementById("grandTotal").textContent =
+    money(subtotal + shipping);
+
+}
+
+function changeQty(index,amount){
+
+  if(!cart[index]) return;
+
+  cart[index].qty += amount;
+
+  if(cart[index].qty <= 0){
+    cart.splice(index,1);
+  }
+
+  saveCart();
+
+}
+
+function removeItem(index){
+
+  cart.splice(index,1);
+
+  saveCart();
+
+  showToast("Produkt usunięty z koszyka");
+
+}
+
+function openCart(){
+
+  updateCart();
+
+  document
+    .getElementById("cartOverlay")
+    .classList.add("open");
+
+  document.body.classList.add("lock");
+
+}
+
+function getStoredUsers(){
+  try {
+    const users = JSON.parse(localStorage.getItem("nexa_users") || "[]");
+    return Array.isArray(users) ? users : [];
+  } catch(e){ return []; }
+}
+
+function saveStoredUsers(users){
+  localStorage.setItem("nexa_users", JSON.stringify(users));
+}
+
+function getSession(){
+  try { return JSON.parse(localStorage.getItem("nexa_session") || "null"); }
+  catch(e){ return null; }
+}
+
+function getCurrentUser(){
+  const session = getSession();
+  if(!session || !session.email) return null;
+  return getStoredUsers().find(user => user.email === session.email) || null;
+}
+
+function migrateLegacyAccount(){
+  const legacy = localStorage.getItem("nexa_user");
+  if(!legacy) return;
+  try {
+    const oldUser = JSON.parse(legacy);
+    if(!oldUser || !oldUser.email) return;
+    const users = getStoredUsers();
+    if(!users.some(user => user.email === oldUser.email.toLowerCase())){
+      users.push({
+        id: "USR-" + Math.random().toString(36).slice(2,10).toUpperCase(),
+        name: oldUser.name || "NEXA USER",
+        email: oldUser.email.toLowerCase(),
+        passwordHash: oldUser.password ? null : null,
+        legacyPassword: oldUser.password || null,
+        createdAt: new Date().toISOString()
+      });
+      saveStoredUsers(users);
+    }
+    localStorage.removeItem("nexa_user");
+  } catch(e){}
+}
+
+async function hashPassword(password){
+  const data = new TextEncoder().encode(password);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+function validEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
+}
+
+function openAccount(){
+  const user = getCurrentUser();
+  const loggedOut = document.getElementById("loggedOut");
+  const loggedIn = document.getElementById("loggedIn");
+
+  if(user){
+    loggedOut.classList.add("hidden");
+    loggedIn.classList.remove("hidden");
+    document.getElementById("accountName").textContent = user.name || "NEXA USER";
+    document.getElementById("accountEmail").textContent = user.email;
+  }else{
+    loggedOut.classList.remove("hidden");
+    loggedIn.classList.add("hidden");
+  }
+
+  document.getElementById("accountOverlay").classList.add("open");
+  document.body.classList.add("lock");
+}
+
+function closeOverlay(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("open");
+
+  document.body.classList.remove("lock");
+
+}
+
+function outsideClose(event,id){
+
+  if(event.target.id === id){
+    closeOverlay(id);
+  }
+
+}
+
+function openModal(id){
+
+  document
+    .getElementById(id)
+    .classList.add("open");
+
+  document.body.classList.add("lock");
+
+}
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("open");
+
+  document.body.classList.remove("lock");
+
+}
+
+function openAuth(mode){
+
+  closeOverlay("accountOverlay");
+
+  switchAuth(mode);
+
+  openModal("authModal");
+
+}
+
+function switchAuth(mode){
+
+  const login = mode === "login";
+
+  document
+    .getElementById("loginTab")
+    .classList.toggle("active",login);
+
+  document
+    .getElementById("registerTab")
+    .classList.toggle("active",!login);
+
+  document
+    .getElementById("nameField")
+    .classList.toggle("hidden",login);
+
+  document
+    .getElementById("termsField")
+    .classList.toggle("hidden",login);
+
+  document.getElementById("authSubmit").textContent =
+    login
+    ? "Zaloguj się →"
+    : "Utwórz konto →";
+
+  document
+    .getElementById("authForm")
+    .dataset.mode = mode;
+
+  document.getElementById("authMessage").textContent = "";
+
+}
+
+async function handleAuth(event){
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const mode = form.dataset.mode || "login";
+  const email = document.getElementById("authEmail").value.trim().toLowerCase();
+  const password = document.getElementById("authPassword").value;
+  const name = document.getElementById("authName").value.trim();
+  const message = document.getElementById("authMessage");
+  const submit = document.getElementById("authSubmit");
+
+  message.textContent = "";
+
+  if(!validEmail(email)){
+    message.textContent = "Wpisz poprawny adres e-mail.";
+    message.style.color = "#ff6262";
+    return;
+  }
+
+  if(password.length < 6){
+    message.textContent = "Hasło musi mieć minimum 6 znaków.";
+    message.style.color = "#ff6262";
+    return;
+  }
+
+  submit.disabled = true;
+  submit.style.opacity = ".65";
+
+  try{
+    const users = getStoredUsers();
+
+    if(mode === "register"){
+      const terms = document.getElementById("terms").checked;
+
+      if(!name){
+        message.textContent = "Wpisz swoje imię.";
+        message.style.color = "#ff6262";
         return;
-
       }
 
-
-      let subtotal = 0;
-
-      cartBody.innerHTML = cart.map((item, index) => {
-
-        const product =
-          PRODUCTS.find(product => product.id === item.id);
-
-        if (!product) return "";
-
-        subtotal += product.price * item.quantity;
-
-        return `
-
-          <div class="cart-item">
-
-            <div class="cart-item-image">
-
-              <img
-                src="${product.image}"
-                alt="${product.name}"
-              >
-
-            </div>
-
-            <div>
-
-              <div class="cart-item-name">
-                ${product.shortName}
-              </div>
-
-              <div class="cart-item-size">
-                ROZMIAR: ${item.size}
-              </div>
-
-              <div class="cart-item-price">
-                ${product.price * item.quantity} PLN
-              </div>
-
-              <div class="quantity">
-
-                <button onclick="changeQuantity(${index},-1)">
-                  −
-                </button>
-
-                <span>
-                  ${item.quantity}
-                </span>
-
-                <button onclick="changeQuantity(${index},1)">
-                  +
-                </button>
-
-              </div>
-
-            </div>
-
-            <button
-              class="remove-item"
-              onclick="removeFromCart(${index})"
-            >
-              USUŃ
-            </button>
-
-          </div>
-
-        `;
-
-      }).join("");
-
-
-      const shipping =
-        subtotal === 0
-          ? 0
-          : subtotal >= 300
-            ? 0
-            : 15;
-
-      const total =
-        subtotal + shipping;
-
-      cartSubtotal.textContent =
-        subtotal + " PLN";
-
-      cartShipping.textContent =
-        shipping === 0
-          ? "GRATIS"
-          : shipping + " PLN";
-
-      cartTotal.textContent =
-        total + " PLN";
-
-    }
-
-
-    /*
-    ============================================================
-    CART OPEN / CLOSE
-    ============================================================
-    */
-
-    function openCart() {
-
-      renderCart();
-
-      overlay.classList.add("open");
-      cartDrawer.classList.add("open");
-
-      document.body.classList.add("no-scroll");
-
-    }
-
-
-    function closeCart() {
-
-      overlay.classList.remove("open");
-      cartDrawer.classList.remove("open");
-
-      document.body.classList.remove("no-scroll");
-
-    }
-
-
-    function closeAll() {
-
-      closeCart();
-      closeProduct();
-      closeLogin();
-      closeCheckout();
-      closeInfo();
-
-    }
-
-
-    /*
-    ============================================================
-    LOGIN
-    ============================================================
-    */
-
-    function openLogin() {
-
-      closeCart();
-
-      document
-        .getElementById("loginModal")
-        .classList.add("open");
-
-      document.body.classList.add("no-scroll");
-
-    }
-
-
-    function closeLogin() {
-
-      document
-        .getElementById("loginModal")
-        .classList.remove("open");
-
-      document.body.classList.remove("no-scroll");
-
-    }
-
-
-    document
-      .getElementById("loginForm")
-      .addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        const email =
-          document.getElementById("loginEmail").value;
-
-        localStorage.setItem(
-          "nexa_user",
-          email
-        );
-
-        document.getElementById("loginMessage")
-          .textContent =
-          "Logowanie demonstracyjne zakończone. Witaj w NEXAWEAR.";
-
-        showToast("Witaj w NEXAWEAR.");
-
-        setTimeout(closeLogin, 1200);
-
-      });
-
-
-    /*
-    ============================================================
-    CHECKOUT
-    ============================================================
-    */
-
-    function openCheckout() {
-
-      if (!cart.length) {
-
-        showToast("Twój koszyk jest pusty.");
-
+      if(name.length < 2){
+        message.textContent = "Imię musi mieć minimum 2 znaki.";
+        message.style.color = "#ff6262";
         return;
-
       }
 
-      closeCart();
-
-      document
-        .getElementById("checkoutModal")
-        .classList.add("open");
-
-      document.body.classList.add("no-scroll");
-
-    }
-
-
-    function closeCheckout() {
-
-      document
-        .getElementById("checkoutModal")
-        .classList.remove("open");
-
-      document.body.classList.remove("no-scroll");
-
-    }
-
-
-    document
-      .getElementById("checkoutForm")
-      .addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        /*
-          FRONTEND DEMO:
-
-          Tutaj możesz później podłączyć:
-          - Stripe
-          - Przelewy24
-          - PayU
-          - Tpay
-          - WooCommerce API
-          - własny backend
-
-          Sam HTML/JS nie może bezpiecznie realizować
-          prawdziwej płatności ani przechowywać danych
-          kart klientów.
-        */
-
-        const orderNumber =
-          "NEXA-" +
-          Date.now()
-            .toString()
-            .slice(-7);
-
-        document.getElementById("checkoutMessage")
-          .textContent =
-          "Zamówienie " +
-          orderNumber +
-          " zostało utworzone w wersji demonstracyjnej.";
-
-        cart = [];
-
-        saveCart();
-        renderCart();
-
-        showToast(
-          "Zamówienie zostało utworzone."
-        );
-
-        setTimeout(() => {
-
-          closeCheckout();
-
-        }, 1800);
-
-      });
-
-
-    /*
-    ============================================================
-    NEWSLETTER
-    ============================================================
-    */
-
-    document
-      .getElementById("newsletterForm")
-      .addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        const email =
-          document.getElementById("newsletterEmail").value;
-
-        localStorage.setItem(
-          "nexa_newsletter",
-          email
-        );
-
-        document.getElementById("newsletterEmail").value = "";
-
-        showToast(
-          "Jesteś na liście NEXAWEAR. Dzięki."
-        );
-
-      });
-
-
-    /*
-    ============================================================
-    INFO
-    ============================================================
-    */
-
-    const INFO = {
-
-      shipping: {
-        title: "Dostawa",
-        content:
-          "Zamówienia wysyłamy z Polski. Standardowa dostawa trwa zwykle 1–3 dni robocze. Przy zamówieniach od 300 PLN dostawa jest darmowa."
-      },
-
-      returns: {
-        title: "Zwroty",
-        content:
-          "Produkty możesz zwrócić zgodnie z obowiązującymi przepisami konsumenckimi. Wprowadź tutaj później dokładną procedurę zwrotów NEXAWEAR oraz adres do wysyłki."
-      },
-
-      terms: {
-        title: "Regulamin",
-        content:
-          "Tutaj możesz umieścić właściwy regulamin sklepu NEXAWEAR. Przed uruchomieniem sprzedaży podłącz pełną wersję regulaminu, dane firmy oraz wymagane informacje prawne."
-      },
-
-      privacy: {
-        title: "Prywatność",
-        content:
-          "Tutaj możesz umieścić właściwą politykę prywatności NEXAWEAR, informacje o cookies, administratorze danych oraz sposobie przetwarzania danych klientów."
+      if(!terms){
+        message.textContent = "Zaakceptuj regulamin.";
+        message.style.color = "#ff6262";
+        return;
       }
 
-    };
+      if(users.some(user => user.email === email)){
+        message.textContent = "Konto z tym adresem e-mail już istnieje. Zaloguj się.";
+        message.style.color = "#ff6262";
+        return;
+      }
 
+      const passwordHash = await hashPassword(password);
+      const user = {
+        id: "USR-" + Math.random().toString(36).slice(2,10).toUpperCase(),
+        name,
+        email,
+        passwordHash,
+        createdAt: new Date().toISOString(),
+        addresses: []
+      };
 
-    function showInfo(type) {
+      users.push(user);
+      saveStoredUsers(users);
+      localStorage.setItem("nexa_session", JSON.stringify({email:user.email, loggedInAt:new Date().toISOString()}));
 
-      const info = INFO[type];
+      message.textContent = "Konto zostało utworzone. Zalogowano automatycznie.";
+      message.style.color = "#65d89b";
+    }else{
+      const user = users.find(item => item.email === email);
 
-      if (!info) return;
+      if(!user){
+        message.textContent = "Nie znaleziono konta z tym adresem e-mail.";
+        message.style.color = "#ff6262";
+        return;
+      }
 
-      document.getElementById("infoTitle")
-        .textContent = info.title;
+      let valid = false;
+      const passwordHash = await hashPassword(password);
 
-      document.getElementById("infoContent")
-        .textContent = info.content;
-
-      document
-        .getElementById("infoModal")
-        .classList.add("open");
-
-      document.body.classList.add("no-scroll");
-
-    }
-
-
-    function closeInfo() {
-
-      document
-        .getElementById("infoModal")
-        .classList.remove("open");
-
-      document.body.classList.remove("no-scroll");
-
-    }
-
-
-    /*
-    ============================================================
-    WISHLIST
-    ============================================================
-    */
-
-    function toggleWishlist(button) {
-
-      button.classList.toggle("active");
-
-      showToast(
-        button.classList.contains("active")
-          ? "Dodano do ulubionych."
-          : "Usunięto z ulubionych."
-      );
-
-    }
-
-
-    /*
-    ============================================================
-    TOAST
-    ============================================================
-    */
-
-    let toastTimer;
-
-    function showToast(message) {
-
-      clearTimeout(toastTimer);
-
-      toast.textContent = message;
-
-      toast.classList.add("show");
-
-      toastTimer = setTimeout(() => {
-
-        toast.classList.remove("show");
-
-      }, 2800);
-
-    }
-
-
-    /*
-    ============================================================
-    MOBILE MENU
-    ============================================================
-    */
-
-    document
-      .getElementById("mobileMenuBtn")
-      .addEventListener("click", () => {
-
-        const existing = document.getElementById("mobileMenu");
-
-        if (existing) {
-
-          existing.remove();
-
-          return;
-
+      if(user.passwordHash){
+        valid = user.passwordHash === passwordHash;
+      }else if(user.legacyPassword){
+        valid = user.legacyPassword === password;
+        if(valid){
+          user.passwordHash = passwordHash;
+          delete user.legacyPassword;
+          saveStoredUsers(users);
         }
+      }
 
-        const menu =
-          document.createElement("div");
+      if(!valid){
+        message.textContent = "Nieprawidłowy e-mail lub hasło.";
+        message.style.color = "#ff6262";
+        return;
+      }
 
-        menu.id = "mobileMenu";
+      localStorage.setItem("nexa_session", JSON.stringify({email:user.email, loggedInAt:new Date().toISOString()}));
+      message.textContent = "Zalogowano pomyślnie.";
+      message.style.color = "#65d89b";
+    }
 
-        menu.style.cssText = `
-          position:fixed;
-          top:94px;
-          left:15px;
-          right:15px;
-          z-index:1500;
-          padding:25px;
-          background:#0d0d0d;
-          border:1px solid rgba(255,255,255,.1);
+    setTimeout(() => {
+      form.reset();
+      closeModal("authModal");
+      openAccount();
+    }, 650);
+
+  }catch(error){
+    console.error(error);
+    message.textContent = "Nie udało się wykonać operacji. Spróbuj ponownie.";
+    message.style.color = "#ff6262";
+  }finally{
+    submit.disabled = false;
+    submit.style.opacity = "1";
+  }
+}
+
+function logout(){
+  localStorage.removeItem("nexa_session");
+  closeOverlay("accountOverlay");
+  showToast("Wylogowano z konta");
+}
+
+function showOrders(){
+  const user = getCurrentUser();
+  if(!user){ showToast("Zaloguj się, aby zobaczyć zamówienia"); return; }
+  const orders = JSON.parse(localStorage.getItem("nexa_orders") || "[]");
+  const mine = orders.filter(order => order.email === user.email);
+  if(!mine.length){
+    showToast("Nie masz jeszcze żadnych zamówień");
+    return;
+  }
+  const last = mine[mine.length - 1];
+  showToast(`Zamówienia: ${mine.length} · ostatnie ${last.number}`);
+}
+
+function showAccountDetails(){
+  const user = getCurrentUser();
+  if(!user) return;
+  showToast(`${user.name} · ${user.email}`);
+}
+
+function showAddresses(){
+  const user = getCurrentUser();
+  if(!user) return;
+  showToast("Adresy dostawy możesz uzupełnić podczas checkoutu");
+}
+
+function checkout(){
+  if(!cart.length){
+    showToast("Koszyk jest pusty");
+    return;
+  }
+
+  closeOverlay("cartOverlay");
+
+  const user = getCurrentUser();
+
+  if(user){
+    document.getElementById("checkoutName").value = user.name || "";
+    document.getElementById("checkoutEmail").value = user.email || "";
+  }
+
+  openModal("checkoutModal");
+}
+
+function placeOrder(event){
+
+  event.preventDefault();
+
+  const order =
+    "NEXA-" +
+    Math.random()
+      .toString(36)
+      .substring(2,8)
+      .toUpperCase();
+
+  const orders =
+    JSON.parse(
+      localStorage.getItem("nexa_orders") || "[]"
+    );
+
+  const total =
+    document.getElementById("grandTotal").textContent;
+
+  const currentUser = getCurrentUser();
+
+  orders.push({
+    number:order,
+    date:new Date().toLocaleString("pl-PL"),
+    total,
+    email: currentUser ? currentUser.email : document.getElementById("checkoutEmail").value.trim().toLowerCase(),
+    items:cart
+  });
+
+  localStorage.setItem(
+    "nexa_orders",
+    JSON.stringify(orders)
+  );
+
+  cart = [];
+
+  saveCart();
+
+  closeModal("checkoutModal");
+
+  showToast(
+    `Zamówienie ${order} zostało zapisane`
+  );
+
+}
+
+function openSearch(){
+
+  document.getElementById("globalSearch").value = "";
+
+  document.getElementById("searchResults").innerHTML = "";
+
+  openModal("searchModal");
+
+  setTimeout(() => {
+
+    document
+      .getElementById("globalSearch")
+      .focus();
+
+  },100);
+
+}
+
+function globalSearch(){
+
+  const query =
+    document
+      .getElementById("globalSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const results =
+    PRODUCTS.filter(product =>
+      product.name
+        .toLowerCase()
+        .includes(query)
+    );
+
+  const container =
+    document.getElementById("searchResults");
+
+  if(!query){
+
+    container.innerHTML =
+      `<p style="color:#666;font-size:11px">
+        Zacznij wpisywać nazwę produktu.
+      </p>`;
+
+    return;
+
+  }
+
+  if(!results.length){
+
+    container.innerHTML =
+      `<p style="color:#666;font-size:11px">
+        Nie znaleziono produktu.
+      </p>`;
+
+    return;
+
+  }
+
+  container.innerHTML =
+    results.map(product => `
+
+      <button
+        onclick="closeModal('searchModal');openProduct(${product.id})"
+        style="
+          width:100%;
+          padding:15px 0;
+          border:0;
+          border-bottom:1px solid #333;
+          background:transparent;
+          color:#fff;
+          text-align:left;
           display:flex;
-          flex-direction:column;
-          gap:20px;
-          box-shadow:0 20px 70px rgba(0,0,0,.5);
-        `;
+          justify-content:space-between;
+          cursor:pointer;
+          font-size:11px;
+        "
+      >
+        <span>${product.name}</span>
+        <span>${money(product.price)}</span>
+      </button>
 
-        menu.innerHTML = `
+    `).join("");
 
-          <a href="#shop"
-             onclick="document.getElementById('mobileMenu').remove()"
-             style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">
-             SHOP
-          </a>
+}
 
-          <a href="#story"
-             onclick="document.getElementById('mobileMenu').remove()"
-             style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">
-             NEXAWEAR
-          </a>
+function subscribe(event){
 
-          <a href="#instagram"
-             onclick="document.getElementById('mobileMenu').remove()"
-             style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">
-             INSTAGRAM
-          </a>
+  event.preventDefault();
 
-          <button
-            onclick="document.getElementById('mobileMenu').remove();openLogin()"
-            style="border:0;background:none;color:#fff;text-align:left;font-size:10px;letter-spacing:.15em;text-transform:uppercase">
-            KONTO
-          </button>
+  const email =
+    document.getElementById("newsletterEmail")
+      .value
+      .trim()
+      .toLowerCase();
 
-        `;
+  const subscribers =
+    JSON.parse(
+      localStorage.getItem("nexa_subscribers") || "[]"
+    );
 
-        document.body.appendChild(menu);
+  if(!subscribers.includes(email)){
+    subscribers.push(email);
+  }
 
-      });
+  localStorage.setItem(
+    "nexa_subscribers",
+    JSON.stringify(subscribers)
+  );
 
+  event.currentTarget.reset();
 
-    /*
-    ============================================================
-    ESC
-    ============================================================
-    */
+  showToast("Witamy w NEXA LETTER.");
 
-    document.addEventListener("keydown", event => {
+}
 
-      if (event.key === "Escape") {
-        closeAll();
-      }
+function showInfo(title){
 
-    });
+  showToast(title + " — wkrótce");
 
+}
 
-    /*
-    ============================================================
-    CLICK OUTSIDE MODALS
-    ============================================================
-    */
+function toggleMobile(){
+
+  const nav =
+    document.getElementById("navLinks");
+
+  if(nav.style.display === "flex"){
+
+    closeMobile();
+
+  }else{
+
+    nav.style.display = "flex";
+    nav.style.position = "absolute";
+    nav.style.left = "0";
+    nav.style.right = "0";
+    nav.style.top = "68px";
+    nav.style.background = "#11110f";
+    nav.style.padding = "25px";
+    nav.style.flexDirection = "column";
+    nav.style.borderBottom = "1px solid #333";
+
+  }
+
+}
+
+function closeMobile(){
+
+  const nav =
+    document.getElementById("navLinks");
+
+  if(window.innerWidth <= 950){
+
+    nav.style.display = "none";
+
+  }
+
+}
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  clearTimeout(window.toastTimeout);
+
+  window.toastTimeout =
+    setTimeout(() => {
+
+      toast.classList.remove("show");
+
+    },2600);
+
+}
+
+document.addEventListener("keydown",event => {
+
+  if(event.key === "Escape"){
 
     document
-      .getElementById("productModal")
-      .addEventListener("click", event => {
-
-        if (event.target.id === "productModal") {
-          closeProduct();
-        }
-
-      });
-
+      .querySelectorAll(".overlay.open")
+      .forEach(element =>
+        element.classList.remove("open")
+      );
 
     document
-      .getElementById("loginModal")
-      .addEventListener("click", event => {
+      .querySelectorAll(".modal.open")
+      .forEach(element =>
+        element.classList.remove("open")
+      );
 
-        if (event.target.id === "loginModal") {
-          closeLogin();
-        }
+    document.body.classList.remove("lock");
 
-      });
+  }
 
+});
+
+window.addEventListener("resize",() => {
+
+  if(window.innerWidth > 950){
+
+    document.getElementById("navLinks").removeAttribute("style");
+
+  }
+
+});
+
+window.addEventListener("load",() => {
+
+  migrateLegacyAccount();
+  renderProducts();
+
+  updateCart();
+
+  setTimeout(() => {
 
     document
-      .getElementById("checkoutModal")
-      .addEventListener("click", event => {
+      .getElementById("loader")
+      .classList.add("hide");
 
-        if (event.target.id === "checkoutModal") {
-          closeCheckout();
-        }
+  },650);
 
-      });
+});
 
-
-    document
-      .getElementById("infoModal")
-      .addEventListener("click", event => {
-
-        if (event.target.id === "infoModal") {
-          closeInfo();
-        }
-
-      });
-
-  </script>
+</script>
 
 </body>
 </html>
